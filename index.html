@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Our Financial Check-In</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  .success-msg {
+    display: none;
+    text-align: center;
+    padding: 40px 24px;
+    background: var(--deep);
+    border-radius: 14px;
+    color: white;
+    margin-top: 24px;
+  }
+  .success-msg .check { font-size: 2.5rem; margin-bottom: 12px; display: block; }
+  .success-msg h2 { font-family: 'Playfair Display', serif; color: var(--gold); margin-bottom: 8px; }
+  .success-msg p { font-size: 0.9rem; color: rgba(255,255,255,0.75); line-height: 1.6; }
+  .submit-btn {
+    width: 100%;
+    padding: 16px;
+    background: var(--sage);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    letter-spacing: 0.03em;
+    transition: background 0.2s, transform 0.1s;
+    margin-top: 8px;
+  }
+  .submit-btn:hover { background: var(--deep); }
+  .submit-btn:active { transform: scale(0.98); }
+
+  :root {
+    --cream: #faf6f0;
+    --warm: #f0e8d8;
+    --sage: #7a9e87;
+    --deep: #2c3e35;
+    --gold: #c9a84c;
+    --rust: #c0614a;
+    --text: #3a3228;
+    --light-text: #7a6e62;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    min-height: 100vh;
+    padding: 40px 20px 80px;
+  }
+
+  .page {
+    max-width: 680px;
+    margin: 0 auto;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 48px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid #d4c9b8;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .heart-icon {
+    font-size: 2rem;
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.4rem;
+    color: var(--deep);
+    line-height: 1.2;
+    margin-bottom: 10px;
+  }
+
+  .subtitle {
+    color: var(--light-text);
+    font-size: 0.95rem;
+    font-weight: 300;
+    line-height: 1.6;
+  }
+
+  .context-box {
+    background: var(--warm);
+    border-left: 3px solid var(--gold);
+    border-radius: 0 8px 8px 0;
+    padding: 14px 18px;
+    margin-bottom: 40px;
+    font-size: 0.88rem;
+    color: var(--light-text);
+    line-height: 1.6;
+    animation: fadeUp 0.6s 0.1s ease both;
+  }
+
+  .section {
+    margin-bottom: 36px;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .section:nth-child(1) { animation-delay: 0.15s; }
+  .section:nth-child(2) { animation-delay: 0.25s; }
+  .section:nth-child(3) { animation-delay: 0.35s; }
+  .section:nth-child(4) { animation-delay: 0.45s; }
+  .section:nth-child(5) { animation-delay: 0.55s; }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ddd4c4;
+  }
+
+  .section-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+
+  .icon-green { background: #dff0e5; }
+  .icon-blue { background: #dde8f5; }
+  .icon-gold { background: #f5edda; }
+  .icon-rust { background: #f5e0db; }
+  .icon-purple { background: #ebe0f5; }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    color: var(--deep);
+  }
+
+  .section-tag {
+    margin-left: auto;
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--light-text);
+    background: var(--warm);
+    padding: 3px 8px;
+    border-radius: 20px;
+  }
+
+  .question-card {
+    background: white;
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 10px;
+    border: 1px solid #ece5d8;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .question-card:hover {
+    border-color: var(--sage);
+    box-shadow: 0 2px 12px rgba(122,158,135,0.1);
+  }
+
+  .q-number {
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: var(--sage);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+  }
+
+  .q-text {
+    font-size: 0.95rem;
+    line-height: 1.55;
+    color: var(--text);
+    font-weight: 400;
+  }
+
+  .q-note {
+    margin-top: 7px;
+    font-size: 0.8rem;
+    color: var(--light-text);
+    font-style: italic;
+  }
+
+  .answer-area {
+    margin-top: 10px;
+    width: 100%;
+    min-height: 52px;
+    background: var(--cream);
+    border: 1px dashed #c9bfb0;
+    border-radius: 6px;
+    resize: vertical;
+    padding: 10px 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .answer-area:focus {
+    border-color: var(--sage);
+    border-style: solid;
+  }
+
+  .scale-row {
+    display: flex;
+    gap: 6px;
+    margin-top: 10px;
+  }
+
+  .scale-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 6px;
+    border: 1px solid #ddd4c4;
+    background: white;
+    font-size: 0.82rem;
+    font-weight: 500;
+    cursor: pointer;
+    color: var(--text);
+    transition: all 0.15s;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .scale-btn:hover { background: var(--sage); color: white; border-color: var(--sage); }
+  .scale-btn.selected { background: var(--sage); color: white; border-color: var(--sage); }
+
+  .scale-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.72rem;
+    color: var(--light-text);
+    margin-top: 4px;
+  }
+
+  .footer-tip {
+    text-align: center;
+    margin-top: 48px;
+    padding: 24px;
+    background: var(--deep);
+    border-radius: 14px;
+    color: rgba(255,255,255,0.85);
+    font-size: 0.88rem;
+    line-height: 1.6;
+    animation: fadeUp 0.6s 0.6s ease both;
+  }
+
+  .footer-tip strong {
+    display: block;
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    color: var(--gold);
+    margin-bottom: 6px;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media print {
+    .answer-area { min-height: 60px; }
+    body { padding: 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header>
+    <span class="heart-icon">💑</span>
+    <h1>Our Financial Check-In</h1>
+    <p class="subtitle">Fill this out on your own, then let's compare notes.<br>No spreadsheets required — just honesty.</p>
+  </header>
+
+  <form id="finance-form" action="https://formspree.io/f/mdalwnoo" method="POST">
+
+  <div class="context-box">
+    📌 <strong>Our setup:</strong> We each handle our own accounts and split shared expenses — half the mortgage, groceries, and the kids. This is about making sure we're aligned on what we're each building toward individually <em>and</em> together.
+  </div>
+
+  <!-- EMERGENCY FUND -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon icon-rust">🛟</div>
+      <span class="section-title">Emergency Fund</span>
+      <span class="section-tag">Safety Net</span>
+    </div>
+
+    <div class="question-card">
+      <div class="q-number">Q1</div>
+      <div class="q-text">How many months of your own expenses do you currently have saved as a cushion?</div>
+      <div class="scale-row" id="months-scale">
+        <button class="scale-btn" onclick="select(this,'months-scale')">0</button>
+        <button class="scale-btn" onclick="select(this,'months-scale')">1</button>
+        <button class="scale-btn" onclick="select(this,'months-scale')">2</button>
+        <button class="scale-btn" onclick="select(this,'months-scale')">3</button>
+        <button class="scale-btn" onclick="select(this,'months-scale')">6</button>
+        <button class="scale-btn" onclick="select(this,'months-scale')">12+</button>
+      </div>
+    </div>
+
+    <div class="question-card">
+      <div class="q-number">Q2</div>
+      <div class="q-text">How many months would make you feel truly secure?</div>
+      <div class="scale-row" id="secure-scale">
+        <button class="scale-btn" onclick="select(this,'secure-scale')">3</button>
+        <button class="scale-btn" onclick="select(this,'secure-scale')">6</button>
+        <button class="scale-btn" onclick="select(this,'secure-scale')">9</button>
+        <button class="scale-btn" onclick="select(this,'secure-scale')">12</button>
+        <button class="scale-btn" onclick="select(this,'secure-scale')">12+</button>
+      </div>
+    </div>
+
+    <div class="question-card">
+      <div class="q-number">Q3</div>
+      <div class="q-text">Should we have a shared emergency fund in addition to our own, for household-level surprises?</div>
+      <textarea class="answer-area" name="Q3 - Shared emergency fund?" placeholder="Your thoughts..."></textarea>
+    </div>
+  </div>
+
+  <!-- SHORT-TERM SAVINGS -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon icon-green">🎯</div>
+      <span class="section-title">Short-Term Goals</span>
+      <span class="section-tag">Next 1–3 Years</span>
+    </div>
+
+    <div class="question-card">
+      <div class="q-number">Q4</div>
+      <div class="q-text">What's one thing you're personally saving toward right now?</div>
+      <textarea class="answer-area" name="Q4 - Saving toward?" placeholder="e.g. car, career change, personal goal..."></textarea>
+    </div>
+
+    <div class="question-card">
+      <div class="q-number">Q5</div>
+      <div class="q-text">Are there any big shared expenses coming up we haven't really planned for?</div>
+      <div class="q-note">Think: home repairs, kids' activities, family trips, medical costs.</div>
+      <textarea class="answer-area" name="Q5 - Upcoming shared expenses?" placeholder="Your thoughts..."></textarea>
+    </div>
+
+    <div class="question-card">
+      <div class="q-number">Q6</div>
+      <div class="q-text">How satisfied are you with how much you're able to save each month, personally?</div>
+      <div class="scale-row" id="save-scale">
+        <button class="scale-btn" onclick="select(this,'save-scale')">1</button>
+        <button class="scale-btn" onclick="select(this,'save-scale')">2</button>
+        <button class="scale-btn" onclick="select(this,'save-scale')">3</button>
+        <button class="scale-btn" onclick="select(this,'save-scale')">4</button>
+        <button class="scale-btn" onclick="select(this,'save-scale')">5</button>
+        <button class="scale-btn" onclick="select(this,'save-scale')">6</button>
+        <button class="scale-btn" onclick="select(this,'save-scale')">7</button>
+        <button class="scale-btn" onclick="select(this,'save-scale')">8</button>
+        <button class="scale-btn" onclick="select(this,'save-scale')">9</button>
+        <button class="scale-btn" onclick="select(this,'save-scale')">10</button>
+      </div>
+      <div class="scale-labels"><span>Not at all</span><span>Completely</span></div>
+    </div>
+  </div>
+
+  <!-- RETIREMENT -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon icon-gold">🌅</div>
+      <span class="section-title">Retirement</span>
+      <span class="section-tag">Long-Term</span>
+    </div>
+
+    <div class="question-card">
+      <div class="q-number">Q7</div>
+      <div class="q-text">At what age would you like to have the <em>option</em> to stop working?</div>
+      <textarea class="answer-area" name="Q7 - Retirement age and vision?" placeholder="And what does retirement look like to you?"></textarea>
+    </div>
+
+    <div class="question-card">
+      <div class="q-number">Q8</div>
+      <div class="q-text">How confident are you that your current retirement contributions will get you there?</div>
+      <div class="scale-row" id="retire-scale">
+        <button class="scale-btn" onclick="select(this,'retire-scale')">1</button>
+        <button class="scale-btn" onclick="select(this,'retire-scale')">2</button>
+        <button class="scale-btn" onclick="select(this,'retire-scale')">3</button>
+        <button class="scale-btn" onclick="select(this,'retire-scale')">4</button>
+        <button class="scale-btn" onclick="select(this,'retire-scale')">5</button>
+        <button class="scale-btn" onclick="select(this,'retire-scale')">6</button>
+        <button class="scale-btn" onclick="select(this,'retire-scale')">7</button>
+        <button class="scale-btn" onclick="select(this,'retire-scale')">8</button>
+        <button class="scale-btn" onclick="select(this,'retire-scale')">9</button>
+        <button class="scale-btn" onclick="select(this,'retire-scale')">10</button>
+      </div>
+      <div class="scale-labels"><span>Not confident</span><span>Very confident</span></div>
+    </div>
+
+    <div class="question-card">
+      <div class="q-number">Q9</div>
+      <div class="q-text">Do you think we should be doing any retirement planning <em>together</em> — joint accounts, coordinating strategies, or just staying aware of each other's progress?</div>
+      <textarea class="answer-area" name="Q9 - Retirement planning together?" placeholder="Your thoughts..."></textarea>
+    </div>
+  </div>
+
+  <!-- PROTECTION & PLANNING -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon icon-blue">🛡️</div>
+      <span class="section-title">Protection & Planning</span>
+      <span class="section-tag">Often Overlooked</span>
+    </div>
+
+    <div class="question-card">
+      <div class="q-number">Q10</div>
+      <div class="q-text">If one of us couldn't work for 6 months, would our household be okay financially?</div>
+      <textarea class="answer-area" name="Q10 - Income protection?" placeholder="Your thoughts..."></textarea>
+    </div>
+
+    <div class="question-card">
+      <div class="q-number">Q11</div>
+      <div class="q-text">Do we have a will, life insurance, and beneficiaries up to date? Is that something we need to revisit?</div>
+      <textarea class="answer-area" name="Q11 - Will and insurance?" placeholder="Your thoughts..."></textarea>
+    </div>
+  </div>
+
+  <!-- US AS A TEAM -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon icon-purple">🤝</div>
+      <span class="section-title">Us as a Team</span>
+      <span class="section-tag">The Real One</span>
+    </div>
+
+    <div class="question-card">
+      <div class="q-number">Q12</div>
+      <div class="q-text">Is there anything about money or our financial setup that's been quietly stressing you out?</div>
+      <textarea class="answer-area" name="Q12 - Financial stress?" placeholder="No wrong answers here..."></textarea>
+    </div>
+
+    <div class="question-card">
+      <div class="q-number">Q13</div>
+      <div class="q-text">What's one financial thing you'd love for us to actually accomplish together in the next year?</div>
+      <textarea class="answer-area" name="Q13 - Goal for next year?" placeholder="Dream a little..."></textarea>
+    </div>
+  </div>
+
+  <div class="footer-tip">
+    <strong>💡 How to use this</strong>
+    Fill it out separately, then sit down together and compare. The gaps between your answers are the most useful part — that's where the real conversation starts.
+  </div>
+
+  <button type="submit" class="submit-btn">Send My Answers ✉️</button>
+
+  </form>
+
+  <div class="success-msg" id="success">
+    <span class="check">✅</span>
+    <h2>Answers Sent!</h2>
+    <p>Thanks for filling this out. Looking forward to talking through it together.</p>
+  </div>
+
+</div>
+
+<script>
+  const scaleSelections = {};
+
+  function select(btn, groupId) {
+    const group = document.getElementById(groupId);
+    group.querySelectorAll('.scale-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    scaleSelections[groupId] = btn.textContent;
+  }
+
+  const scaleNames = {
+    'months-scale': 'Q1 - Current emergency fund (months)',
+    'secure-scale': 'Q2 - Target emergency fund (months)',
+    'save-scale':   'Q6 - Savings satisfaction (1-10)',
+    'retire-scale': 'Q8 - Retirement confidence (1-10)'
+  };
+
+  document.getElementById('finance-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const form = e.target;
+    const data = new FormData(form);
+
+    // Inject scale selections as hidden fields
+    for (const [id, label] of Object.entries(scaleNames)) {
+      data.append(label, scaleSelections[id] || 'No answer');
+    }
+
+    const btn = form.querySelector('.submit-btn');
+    btn.textContent = 'Sending...';
+    btn.disabled = true;
+
+    try {
+      const res = await fetch(form.action, {
+        method: 'POST',
+        body: data,
+        headers: { 'Accept': 'application/json' }
+      });
+
+      if (res.ok) {
+        form.style.display = 'none';
+        document.getElementById('success').style.display = 'block';
+      } else {
+        btn.textContent = 'Something went wrong — try again';
+        btn.disabled = false;
+      }
+    } catch {
+      btn.textContent = 'Something went wrong — try again';
+      btn.disabled = false;
+    }
+  });
+</script>
+</body>
+</html>
