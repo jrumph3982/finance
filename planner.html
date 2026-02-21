@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Our Savings Planner</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --cream: #faf6f0;
+    --warm: #f0e8d8;
+    --sage: #7a9e87;
+    --deep: #2c3e35;
+    --gold: #c9a84c;
+    --rust: #c0614a;
+    --blue: #5b8ab0;
+    --text: #3a3228;
+    --light-text: #7a6e62;
+    --border: #ddd4c4;
+    --card: #ffffff;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    min-height: 100vh;
+    padding: 40px 20px 80px;
+  }
+
+  .page { max-width: 780px; margin: 0 auto; }
+
+  header {
+    text-align: center;
+    margin-bottom: 40px;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .header-icon { font-size: 2rem; display: block; margin-bottom: 10px; }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    color: var(--deep);
+    line-height: 1.2;
+    margin-bottom: 8px;
+  }
+
+  .subtitle { color: var(--light-text); font-size: 0.95rem; font-weight: 300; }
+
+  /* INPUT SECTION */
+  .input-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 28px;
+    animation: fadeUp 0.6s 0.1s ease both;
+  }
+
+  @media (max-width: 560px) { .input-grid { grid-template-columns: 1fr; } }
+
+  .input-card {
+    background: white;
+    border-radius: 14px;
+    padding: 18px 20px;
+    border: 1px solid var(--border);
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .input-card:hover { border-color: var(--sage); box-shadow: 0 2px 12px rgba(122,158,135,0.1); }
+
+  .input-card.full { grid-column: 1 / -1; }
+
+  .input-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--light-text);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 10px;
+  }
+
+  .input-label .dot {
+    width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+  }
+
+  .input-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .currency {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    color: var(--light-text);
+  }
+
+  input[type="number"], input[type="range"] {
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  input[type="number"] {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: var(--deep);
+    background: transparent;
+    width: 100%;
+  }
+
+  input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+  .slider-wrap { margin-top: 10px; }
+
+  input[type="range"] {
+    width: 100%;
+    -webkit-appearance: none;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--warm);
+    outline: none;
+    cursor: pointer;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--sage);
+    cursor: pointer;
+    border: 2px solid white;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    transition: transform 0.15s;
+  }
+
+  input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+
+  .slider-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.72rem;
+    color: var(--light-text);
+    margin-top: 4px;
+  }
+
+  .slider-val {
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: var(--deep);
+    margin-bottom: 6px;
+  }
+
+  /* SUMMARY TILES */
+  .summary-tiles {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 28px;
+    animation: fadeUp 0.6s 0.2s ease both;
+  }
+
+  @media (max-width: 600px) { .summary-tiles { grid-template-columns: 1fr 1fr; } }
+
+  .tile {
+    background: white;
+    border-radius: 12px;
+    padding: 16px;
+    border: 1px solid var(--border);
+    text-align: center;
+  }
+
+  .tile-icon { font-size: 1.3rem; margin-bottom: 6px; }
+  .tile-label { font-size: 0.72rem; color: var(--light-text); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+  .tile-value { font-family: 'Playfair Display', serif; font-size: 1.25rem; color: var(--deep); font-weight: 700; }
+  .tile-sub { font-size: 0.75rem; color: var(--light-text); margin-top: 2px; }
+
+  .tile.highlight { background: var(--deep); border-color: var(--deep); }
+  .tile.highlight .tile-label { color: rgba(255,255,255,0.6); }
+  .tile.highlight .tile-value { color: var(--gold); }
+  .tile.highlight .tile-sub { color: rgba(255,255,255,0.5); }
+
+  /* CHARTS */
+  .charts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 28px;
+    animation: fadeUp 0.6s 0.3s ease both;
+  }
+
+  @media (max-width: 600px) { .charts-grid { grid-template-columns: 1fr; } }
+
+  .chart-card {
+    background: white;
+    border-radius: 14px;
+    padding: 20px;
+    border: 1px solid var(--border);
+  }
+
+  .chart-card.wide { grid-column: 1 / -1; }
+
+  .chart-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    color: var(--deep);
+    margin-bottom: 4px;
+  }
+
+  .chart-sub { font-size: 0.78rem; color: var(--light-text); margin-bottom: 16px; }
+
+  .chart-wrap { position: relative; }
+
+  /* GOALS SECTION */
+  .goals-section {
+    background: white;
+    border-radius: 14px;
+    padding: 24px;
+    border: 1px solid var(--border);
+    margin-bottom: 28px;
+    animation: fadeUp 0.6s 0.4s ease both;
+  }
+
+  .goals-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+  }
+
+  .goals-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: var(--deep);
+  }
+
+  .add-goal-btn {
+    background: var(--warm);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem;
+    color: var(--text);
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .add-goal-btn:hover { background: var(--sage); color: white; border-color: var(--sage); }
+
+  .goal-item {
+    display: grid;
+    grid-template-columns: 1fr auto auto auto;
+    gap: 10px;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0e8d8;
+  }
+
+  .goal-item:last-child { border-bottom: none; }
+
+  .goal-name-input, .goal-amount-input {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    color: var(--text);
+    background: var(--cream);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .goal-name-input:focus, .goal-amount-input:focus { border-color: var(--sage); }
+  .goal-name-input { width: 100%; }
+  .goal-amount-input { width: 100px; text-align: right; }
+
+  .goal-progress-wrap { min-width: 80px; }
+
+  .goal-eta {
+    font-size: 0.75rem;
+    color: var(--sage);
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .goal-progress-bar {
+    height: 5px;
+    background: var(--warm);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 3px;
+  }
+
+  .goal-progress-fill {
+    height: 100%;
+    background: var(--sage);
+    border-radius: 3px;
+    transition: width 0.5s ease;
+  }
+
+  .remove-goal {
+    background: none;
+    border: none;
+    color: var(--light-text);
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 4px;
+    border-radius: 4px;
+    transition: color 0.2s;
+  }
+
+  .remove-goal:hover { color: var(--rust); }
+
+  /* RETIREMENT PROJECTION */
+  .retirement-card {
+    background: var(--deep);
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 28px;
+    color: white;
+    animation: fadeUp 0.6s 0.5s ease both;
+  }
+
+  .retirement-card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: var(--gold);
+    margin-bottom: 4px;
+  }
+
+  .retirement-card p { font-size: 0.82rem; color: rgba(255,255,255,0.6); margin-bottom: 16px; }
+
+  .retire-inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  @media (max-width: 560px) { .retire-inputs { grid-template-columns: 1fr; } }
+
+  .retire-input-group label {
+    display: block;
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.55);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 6px;
+  }
+
+  .retire-input-group input {
+    width: 100%;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    color: white;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .retire-input-group input:focus { border-color: var(--gold); }
+  .retire-input-group input::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+  .retire-result {
+    background: rgba(255,255,255,0.06);
+    border-radius: 10px;
+    padding: 16px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    text-align: center;
+  }
+
+  @media (max-width: 560px) { .retire-result { grid-template-columns: 1fr; } }
+
+  .retire-stat-label { font-size: 0.72rem; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+  .retire-stat-value { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--gold); }
+
+  /* SUBMIT */
+  .submit-section {
+    text-align: center;
+    animation: fadeUp 0.6s 0.6s ease both;
+  }
+
+  .submit-note {
+    font-size: 0.85rem;
+    color: var(--light-text);
+    margin-bottom: 16px;
+  }
+
+  .submit-btn {
+    display: inline-block;
+    background: var(--sage);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 16px 40px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.1s;
+    letter-spacing: 0.02em;
+  }
+
+  .submit-btn:hover { background: var(--deep); }
+  .submit-btn:active { transform: scale(0.98); }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 8px 0 20px;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header>
+    <span class="header-icon">📊</span>
+    <h1>Your Savings Planner</h1>
+    <p class="subtitle">Now that you've shared your thoughts — see where your money goes and where it could take you.</p>
+  </header>
+
+  <!-- INPUTS -->
+  <div class="input-grid">
+    <div class="input-card">
+      <div class="input-label"><span class="dot" style="background:#7a9e87"></span>Monthly Take-Home Pay</div>
+      <div class="input-row">
+        <span class="currency">$</span>
+        <input type="number" id="income" value="5000" min="0" oninput="update()">
+      </div>
+    </div>
+
+    <div class="input-card">
+      <div class="input-label"><span class="dot" style="background:#c0614a"></span>Monthly Bills & Fixed Expenses</div>
+      <div class="input-row">
+        <span class="currency">$</span>
+        <input type="number" id="bills" value="2200" min="0" oninput="update()">
+      </div>
+    </div>
+
+    <div class="input-card">
+      <div class="input-label"><span class="dot" style="background:#c9a84c"></span>Emergency Fund Goal (months)</div>
+      <div class="slider-val" id="ef-val">6 months</div>
+      <div class="slider-wrap">
+        <input type="range" id="ef-months" min="1" max="12" value="6" oninput="update()">
+        <div class="slider-labels"><span>1 mo</span><span>12 mo</span></div>
+      </div>
+    </div>
+
+    <div class="input-card">
+      <div class="input-label"><span class="dot" style="background:#5b8ab0"></span>% of Leftover to Save</div>
+      <div class="slider-val" id="save-pct-val">50%</div>
+      <div class="slider-wrap">
+        <input type="range" id="save-pct" min="5" max="100" step="5" value="50" oninput="update()">
+        <div class="slider-labels"><span>5%</span><span>100%</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUMMARY TILES -->
+  <div class="summary-tiles">
+    <div class="tile">
+      <div class="tile-icon">💸</div>
+      <div class="tile-label">Left After Bills</div>
+      <div class="tile-value" id="tile-leftover">$0</div>
+      <div class="tile-sub">per month</div>
+    </div>
+    <div class="tile">
+      <div class="tile-icon">🏦</div>
+      <div class="tile-label">Monthly Savings</div>
+      <div class="tile-value" id="tile-savings">$0</div>
+      <div class="tile-sub">per month</div>
+    </div>
+    <div class="tile">
+      <div class="tile-icon">🛟</div>
+      <div class="tile-label">Emergency Fund</div>
+      <div class="tile-value" id="tile-ef-target">$0</div>
+      <div class="tile-sub" id="tile-ef-eta">—</div>
+    </div>
+    <div class="tile highlight">
+      <div class="tile-icon">✨</div>
+      <div class="tile-label">Annual Savings</div>
+      <div class="tile-value" id="tile-annual">$0</div>
+      <div class="tile-sub">per year</div>
+    </div>
+  </div>
+
+  <!-- CHARTS -->
+  <div class="charts-grid">
+    <div class="chart-card">
+      <div class="chart-title">Where Your Money Goes</div>
+      <div class="chart-sub">Monthly breakdown</div>
+      <div class="chart-wrap"><canvas id="donut-chart" height="200"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Emergency Fund Timeline</div>
+      <div class="chart-sub">Months to reach your goal</div>
+      <div class="chart-wrap"><canvas id="ef-chart" height="200"></canvas></div>
+    </div>
+    <div class="chart-card wide">
+      <div class="chart-title">Savings Growth Over 5 Years</div>
+      <div class="chart-sub">Cumulative savings at your current rate</div>
+      <div class="chart-wrap"><canvas id="growth-chart" height="160"></canvas></div>
+    </div>
+  </div>
+
+  <!-- GOALS -->
+  <div class="goals-section">
+    <div class="goals-header">
+      <div>
+        <div class="goals-title">🎯 Personal Savings Goals</div>
+        <div style="font-size:0.78rem;color:var(--light-text);margin-top:2px;">See how long each goal will take at your current rate</div>
+      </div>
+      <button class="add-goal-btn" onclick="addGoal()">+ Add Goal</button>
+    </div>
+    <div id="goals-list"></div>
+  </div>
+
+  <!-- RETIREMENT -->
+  <div class="retirement-card">
+    <h3>🌅 Retirement Projection</h3>
+    <p>A rough estimate based on your savings rate and timeline</p>
+    <div class="retire-inputs">
+      <div class="retire-input-group">
+        <label>Current Age</label>
+        <input type="number" id="cur-age" value="35" min="18" max="70" oninput="updateRetirement()">
+      </div>
+      <div class="retire-input-group">
+        <label>Target Retirement Age</label>
+        <input type="number" id="ret-age" value="65" min="40" max="80" oninput="updateRetirement()">
+      </div>
+      <div class="retire-input-group">
+        <label>Current Retirement Savings</label>
+        <input type="number" id="cur-savings" value="20000" min="0" oninput="updateRetirement()">
+      </div>
+    </div>
+    <div class="retire-result">
+      <div>
+        <div class="retire-stat-label">Years to Retire</div>
+        <div class="retire-stat-value" id="ret-years">—</div>
+      </div>
+      <div>
+        <div class="retire-stat-label">Est. Nest Egg</div>
+        <div class="retire-stat-value" id="ret-nest">—</div>
+      </div>
+      <div>
+        <div class="retire-stat-label">Monthly in Retirement*</div>
+        <div class="retire-stat-value" id="ret-monthly">—</div>
+      </div>
+    </div>
+    <p style="margin-top:12px;margin-bottom:0;font-size:0.72rem;color:rgba(255,255,255,0.35);">*Assumes 6% annual growth, 4% withdrawal rule, 20 year retirement. This is an estimate only.</p>
+  </div>
+
+  <!-- SUBMIT -->
+  <div class="submit-section">
+    <p class="submit-note">All done exploring? Your answers from the check-in are already on their way.</p>
+    <a href="index.html" class="submit-btn">← Back to the Check-In</a>
+  </div>
+
+</div>
+
+<script>
+  // ── CHART INSTANCES ──
+  let donutChart, efChart, growthChart;
+
+  // ── DEFAULT GOALS ──
+  let goals = [
+    { name: 'Vacation Fund', amount: 3000 },
+    { name: 'New Car', amount: 15000 },
+  ];
+
+  function fmt(n) {
+    if (n >= 1000000) return '$' + (n/1000000).toFixed(1) + 'M';
+    if (n >= 1000) return '$' + Math.round(n/1000) + 'k';
+    return '$' + Math.round(n).toLocaleString();
+  }
+
+  function fmtFull(n) {
+    return '$' + Math.round(n).toLocaleString();
+  }
+
+  function update() {
+    const income = parseFloat(document.getElementById('income').value) || 0;
+    const bills  = parseFloat(document.getElementById('bills').value)  || 0;
+    const efMonths = parseInt(document.getElementById('ef-months').value);
+    const savePct  = parseInt(document.getElementById('save-pct').value);
+
+    document.getElementById('ef-val').textContent = efMonths + ' month' + (efMonths > 1 ? 's' : '');
+    document.getElementById('save-pct-val').textContent = savePct + '%';
+
+    const leftover  = Math.max(0, income - bills);
+    const monthlySavings = leftover * (savePct / 100);
+    const monthlySpend   = leftover - monthlySavings;
+    const annualSavings  = monthlySavings * 12;
+    const efTarget  = bills * efMonths;
+    const efEtaMonths = monthlySavings > 0 ? Math.ceil(efTarget / monthlySavings) : null;
+
+    // Tiles
+    document.getElementById('tile-leftover').textContent = fmtFull(leftover);
+    document.getElementById('tile-savings').textContent  = fmtFull(monthlySavings);
+    document.getElementById('tile-ef-target').textContent = fmtFull(efTarget);
+    document.getElementById('tile-annual').textContent   = fmtFull(annualSavings);
+    document.getElementById('tile-ef-eta').textContent  = efEtaMonths
+      ? (efEtaMonths <= 12 ? efEtaMonths + ' mo to goal' : Math.ceil(efEtaMonths/12) + ' yrs to goal')
+      : 'increase savings';
+
+    // Donut
+    const donutData = [bills, monthlySavings, monthlySpend];
+    if (!donutChart) {
+      donutChart = new Chart(document.getElementById('donut-chart'), {
+        type: 'doughnut',
+        data: {
+          labels: ['Bills & Fixed', 'Savings', 'Spending Money'],
+          datasets: [{ data: donutData, backgroundColor: ['#c0614a','#7a9e87','#c9a84c'], borderWidth: 0, hoverOffset: 6 }]
+        },
+        options: {
+          cutout: '68%',
+          plugins: { legend: { position: 'bottom', labels: { font: { family: 'DM Sans', size: 11 }, color: '#7a6e62', padding: 12, boxWidth: 10 } } },
+          animation: { duration: 600 }
+        }
+      });
+    } else {
+      donutChart.data.datasets[0].data = donutData;
+      donutChart.update();
+    }
+
+    // EF chart — bar showing month-by-month
+    const efLabels = [], efValues = [];
+    let running = 0;
+    const months = efEtaMonths ? Math.min(efEtaMonths, 24) : 12;
+    for (let m = 1; m <= months; m++) {
+      running = Math.min(running + monthlySavings, efTarget);
+      if (m % Math.max(1, Math.floor(months/8)) === 0 || m === months) {
+        efLabels.push('Mo ' + m);
+        efValues.push(Math.round(running));
+      }
+    }
+    if (!efChart) {
+      efChart = new Chart(document.getElementById('ef-chart'), {
+        type: 'bar',
+        data: {
+          labels: efLabels,
+          datasets: [{
+            label: 'Saved',
+            data: efValues,
+            backgroundColor: efValues.map((v,i) => i === efValues.length-1 ? '#7a9e87' : 'rgba(122,158,135,0.35)'),
+            borderRadius: 5, borderSkipped: false
+          },{
+            label: 'Goal',
+            data: efValues.map(() => efTarget),
+            type: 'line',
+            borderColor: '#c9a84c',
+            borderWidth: 2,
+            borderDash: [5,4],
+            pointRadius: 0,
+            fill: false
+          }]
+        },
+        options: {
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { grid: { display: false }, ticks: { font: { family: 'DM Sans', size: 10 }, color: '#7a6e62' } },
+            y: { grid: { color: '#f0e8d8' }, ticks: { font: { family: 'DM Sans', size: 10 }, color: '#7a6e62', callback: v => fmt(v) } }
+          },
+          animation: { duration: 600 }
+        }
+      });
+    } else {
+      efChart.data.labels = efLabels;
+      efChart.data.datasets[0].data = efValues;
+      efChart.data.datasets[0].backgroundColor = efValues.map((v,i) => i === efValues.length-1 ? '#7a9e87' : 'rgba(122,158,135,0.35)');
+      efChart.data.datasets[1].data = efValues.map(() => efTarget);
+      efChart.update();
+    }
+
+    // 5-year growth
+    const growthLabels = [], growthData = [];
+    let cumulative = 0;
+    for (let m = 1; m <= 60; m++) {
+      cumulative += monthlySavings;
+      if (m % 6 === 0) {
+        growthLabels.push('Yr ' + (m/12).toFixed(1).replace('.0',''));
+        growthData.push(Math.round(cumulative));
+      }
+    }
+    if (!growthChart) {
+      growthChart = new Chart(document.getElementById('growth-chart'), {
+        type: 'line',
+        data: {
+          labels: growthLabels,
+          datasets: [{
+            label: 'Total Saved',
+            data: growthData,
+            borderColor: '#7a9e87',
+            backgroundColor: 'rgba(122,158,135,0.1)',
+            fill: true,
+            tension: 0.4,
+            pointRadius: 4,
+            pointBackgroundColor: '#7a9e87',
+            pointBorderColor: 'white',
+            pointBorderWidth: 2
+          }]
+        },
+        options: {
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { grid: { display: false }, ticks: { font: { family: 'DM Sans', size: 11 }, color: '#7a6e62' } },
+            y: { grid: { color: '#f0e8d8' }, ticks: { font: { family: 'DM Sans', size: 11 }, color: '#7a6e62', callback: v => fmt(v) } }
+          },
+          animation: { duration: 600 }
+        }
+      });
+    } else {
+      growthChart.data.labels = growthLabels;
+      growthChart.data.datasets[0].data = growthData;
+      growthChart.update();
+    }
+
+    // Goals
+    renderGoals(monthlySavings);
+    updateRetirement(monthlySavings);
+  }
+
+  function getMonthlySavings() {
+    const income = parseFloat(document.getElementById('income').value) || 0;
+    const bills  = parseFloat(document.getElementById('bills').value)  || 0;
+    const savePct  = parseInt(document.getElementById('save-pct').value);
+    return Math.max(0, income - bills) * (savePct / 100);
+  }
+
+  function renderGoals(ms) {
+    const monthlySavings = ms !== undefined ? ms : getMonthlySavings();
+    const list = document.getElementById('goals-list');
+    list.innerHTML = '';
+
+    if (goals.length === 0) {
+      list.innerHTML = '<p style="color:var(--light-text);font-size:0.88rem;text-align:center;padding:16px 0;">No goals yet — add one above!</p>';
+      return;
+    }
+
+    goals.forEach((g, i) => {
+      const etaMonths = monthlySavings > 0 ? Math.ceil(g.amount / monthlySavings) : null;
+      const etaText = !etaMonths ? 'Increase savings' :
+                      etaMonths <= 12 ? etaMonths + ' months' :
+                      (etaMonths / 12).toFixed(1) + ' years';
+      const pct = monthlySavings > 0 ? Math.min(100, (monthlySavings / g.amount) * 100 * 3) : 0;
+
+      const row = document.createElement('div');
+      row.className = 'goal-item';
+      row.innerHTML = `
+        <input class="goal-name-input" type="text" value="${g.name}" placeholder="Goal name" oninput="goals[${i}].name=this.value">
+        <input class="goal-amount-input" type="number" value="${g.amount}" placeholder="Amount" oninput="goals[${i}].amount=parseFloat(this.value)||0; renderGoals()">
+        <div class="goal-progress-wrap">
+          <div class="goal-eta">${etaText}</div>
+          <div class="goal-progress-bar"><div class="goal-progress-fill" style="width:${pct}%"></div></div>
+        </div>
+        <button class="remove-goal" onclick="goals.splice(${i},1); renderGoals()" title="Remove">✕</button>
+      `;
+      list.appendChild(row);
+    });
+  }
+
+  function addGoal() {
+    goals.push({ name: 'New Goal', amount: 5000 });
+    renderGoals();
+  }
+
+  function updateRetirement(ms) {
+    const monthlySavings = ms !== undefined ? ms : getMonthlySavings();
+    const curAge = parseInt(document.getElementById('cur-age').value) || 35;
+    const retAge = parseInt(document.getElementById('ret-age').value) || 65;
+    const curSavings = parseFloat(document.getElementById('cur-savings').value) || 0;
+
+    const years = Math.max(0, retAge - curAge);
+    const months = years * 12;
+    const annualRate = 0.06 / 12;
+
+    // FV of current savings
+    const fvCurrent = curSavings * Math.pow(1 + annualRate, months);
+    // FV of monthly contributions
+    const fvContrib = monthlySavings * ((Math.pow(1 + annualRate, months) - 1) / annualRate);
+    const nestEgg = fvCurrent + fvContrib;
+    const monthlyInRetirement = nestEgg * 0.04 / 12;
+
+    document.getElementById('ret-years').textContent = years + ' yrs';
+    document.getElementById('ret-nest').textContent = fmt(nestEgg);
+    document.getElementById('ret-monthly').textContent = fmtFull(monthlyInRetirement) + '/mo';
+  }
+
+  // Init
+  update();
+</script>
+</body>
+</html>
