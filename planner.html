@@ -18,418 +18,168 @@
     --text: #3a3228;
     --light-text: #7a6e62;
     --border: #ddd4c4;
-    --card: #ffffff;
   }
-
   * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--cream); font-family: 'DM Sans', sans-serif; color: var(--text); min-height: 100vh; padding: 36px 20px 80px; }
+  .page { max-width: 800px; margin: 0 auto; }
 
-  body {
-    background: var(--cream);
-    font-family: 'DM Sans', sans-serif;
-    color: var(--text);
-    min-height: 100vh;
-    padding: 40px 20px 80px;
+  header { text-align: center; margin-bottom: 28px; animation: fadeUp 0.5s ease both; }
+  .header-icon { font-size: 1.8rem; display: block; margin-bottom: 8px; }
+  h1 { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--deep); margin-bottom: 6px; }
+  .subtitle { color: var(--light-text); font-size: 0.9rem; font-weight: 300; }
+
+  /* MODE SWITCHER */
+  .mode-switcher {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 24px; background: white;
+    border: 1px solid var(--border); border-radius: 14px;
+    padding: 13px 18px; animation: fadeUp 0.5s 0.1s ease both;
   }
-
-  .page { max-width: 780px; margin: 0 auto; }
-
-  header {
-    text-align: center;
-    margin-bottom: 40px;
-    animation: fadeUp 0.6s ease both;
+  .mode-label { font-size: 0.78rem; font-weight: 500; color: var(--light-text); text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap; }
+  .mode-select {
+    flex: 1; appearance: none; background: var(--cream);
+    border: 1px solid var(--border); border-radius: 10px;
+    padding: 10px 36px 10px 14px; font-family: 'Playfair Display', serif;
+    font-size: 1rem; color: var(--deep); cursor: pointer; outline: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237a6e62' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 14px center;
+    transition: border-color 0.2s;
   }
+  .mode-select:focus { border-color: var(--sage); }
+  .mode-desc { font-size: 0.78rem; color: var(--light-text); display: none; }
+  @media (min-width: 560px) { .mode-desc { display: block; } }
 
-  .header-icon { font-size: 2rem; display: block; margin-bottom: 10px; }
+  /* PANELS */
+  .panel { display: none; animation: fadeUp 0.4s ease both; }
+  .panel.active { display: block; }
 
-  h1 {
-    font-family: 'Playfair Display', serif;
-    font-size: 2.2rem;
-    color: var(--deep);
-    line-height: 1.2;
-    margin-bottom: 8px;
-  }
+  /* SHARED */
+  .card { background: white; border-radius: 14px; padding: 20px 22px; border: 1px solid var(--border); margin-bottom: 14px; }
+  .card-title { font-family: 'Playfair Display', serif; font-size: 1rem; color: var(--deep); margin-bottom: 3px; }
+  .card-sub { font-size: 0.76rem; color: var(--light-text); margin-bottom: 14px; }
 
-  .subtitle { color: var(--light-text); font-size: 0.95rem; font-weight: 300; }
-
-  /* INPUT SECTION */
-  .input-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
-    margin-bottom: 28px;
-    animation: fadeUp 0.6s 0.1s ease both;
-  }
-
-  @media (max-width: 560px) { .input-grid { grid-template-columns: 1fr; } }
-
-  .input-card {
-    background: white;
-    border-radius: 14px;
-    padding: 18px 20px;
-    border: 1px solid var(--border);
-    transition: border-color 0.2s, box-shadow 0.2s;
-  }
-
-  .input-card:hover { border-color: var(--sage); box-shadow: 0 2px 12px rgba(122,158,135,0.1); }
-
+  .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+  @media (max-width: 520px) { .input-grid { grid-template-columns: 1fr; } }
+  .input-card { background: white; border-radius: 14px; padding: 15px 17px; border: 1px solid var(--border); transition: border-color 0.2s; }
+  .input-card:hover { border-color: var(--sage); }
   .input-card.full { grid-column: 1 / -1; }
-
-  .input-label {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.8rem;
-    font-weight: 500;
-    color: var(--light-text);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    margin-bottom: 10px;
-  }
-
-  .input-label .dot {
-    width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
-  }
-
-  .input-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .currency {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.3rem;
-    color: var(--light-text);
-  }
-
-  input[type="number"], input[type="range"] {
-    font-family: 'DM Sans', sans-serif;
-  }
-
-  input[type="number"] {
-    flex: 1;
-    border: none;
-    outline: none;
-    font-size: 1.5rem;
-    font-weight: 500;
-    color: var(--deep);
-    background: transparent;
-    width: 100%;
-  }
-
+  .input-label { display: flex; align-items: center; gap: 7px; font-size: 0.74rem; font-weight: 500; color: var(--light-text); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 7px; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .input-row { display: flex; align-items: center; gap: 6px; }
+  .currency { font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--light-text); }
+  input[type="number"] { flex: 1; border: none; outline: none; font-size: 1.35rem; font-weight: 500; color: var(--deep); background: transparent; width: 100%; font-family: 'DM Sans', sans-serif; }
   input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
-
-  .slider-wrap { margin-top: 10px; }
-
-  input[type="range"] {
-    width: 100%;
-    -webkit-appearance: none;
-    height: 4px;
-    border-radius: 2px;
-    background: var(--warm);
-    outline: none;
-    cursor: pointer;
-  }
-
-  input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 18px; height: 18px;
-    border-radius: 50%;
-    background: var(--sage);
-    cursor: pointer;
-    border: 2px solid white;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
-    transition: transform 0.15s;
-  }
-
+  input[type="range"] { width: 100%; -webkit-appearance: none; height: 4px; border-radius: 2px; background: var(--warm); outline: none; cursor: pointer; }
+  input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 17px; height: 17px; border-radius: 50%; background: var(--sage); cursor: pointer; border: 2px solid white; box-shadow: 0 1px 4px rgba(0,0,0,0.2); transition: transform 0.15s; }
   input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+  .slider-val { font-size: 1.35rem; font-weight: 500; color: var(--deep); margin-bottom: 5px; }
+  .slider-labels { display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--light-text); margin-top: 3px; }
 
-  .slider-labels {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.72rem;
-    color: var(--light-text);
-    margin-top: 4px;
+  .tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 14px; }
+  @media (max-width: 560px) { .tiles { grid-template-columns: 1fr 1fr; } }
+  .tile { background: white; border-radius: 12px; padding: 13px; border: 1px solid var(--border); text-align: center; }
+  .tile-icon { font-size: 1.1rem; margin-bottom: 4px; }
+  .tile-label { font-size: 0.67rem; color: var(--light-text); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 3px; }
+  .tile-value { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--deep); font-weight: 700; }
+  .tile-sub { font-size: 0.68rem; color: var(--light-text); margin-top: 2px; }
+  .tile.hi { background: var(--deep); border-color: var(--deep); }
+  .tile.hi .tile-label { color: rgba(255,255,255,0.55); }
+  .tile.hi .tile-value { color: var(--gold); }
+  .tile.hi .tile-sub { color: rgba(255,255,255,0.45); }
+
+  .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; margin-bottom: 14px; }
+  @media (max-width: 560px) { .charts-grid { grid-template-columns: 1fr; } }
+  .chart-card { background: white; border-radius: 14px; padding: 17px 19px; border: 1px solid var(--border); margin-bottom: 14px; }
+  .chart-card.wide { grid-column: 1 / -1; margin-bottom: 0; }
+
+  /* ── GOALS PANEL ── */
+  .goals-toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; gap: 8px; flex-wrap: wrap; }
+  .goals-toolbar-left { display: flex; align-items: center; gap: 8px; }
+  .sort-select, .filter-select {
+    appearance: none; background: var(--warm); border: 1px solid var(--border);
+    border-radius: 8px; padding: 6px 26px 6px 10px; font-family: 'DM Sans', sans-serif;
+    font-size: 0.76rem; color: var(--text); cursor: pointer; outline: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%237a6e62' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 9px center;
   }
+  .add-goal-btn { background: var(--sage); border: none; border-radius: 8px; padding: 7px 15px; font-family: 'DM Sans', sans-serif; font-size: 0.8rem; font-weight: 500; color: white; cursor: pointer; transition: background 0.2s; }
+  .add-goal-btn:hover { background: var(--deep); }
 
-  .slider-val {
-    font-size: 1.5rem;
-    font-weight: 500;
-    color: var(--deep);
-    margin-bottom: 6px;
-  }
+  .avail-bar { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .avail-label { font-size: 0.76rem; color: var(--light-text); flex-shrink: 0; }
+  .avail-amount { font-family: 'Playfair Display', serif; font-size: 1rem; color: var(--deep); font-weight: 700; flex-shrink: 0; }
+  .avail-track { flex: 1; min-width: 100px; height: 5px; background: var(--warm); border-radius: 3px; overflow: hidden; }
+  .avail-fill { height: 100%; background: var(--sage); border-radius: 3px; transition: width 0.5s ease; }
+  .avail-note { font-size: 0.73rem; color: var(--light-text); flex-shrink: 0; }
 
-  /* SUMMARY TILES */
-  .summary-tiles {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 12px;
-    margin-bottom: 28px;
-    animation: fadeUp 0.6s 0.2s ease both;
-  }
+  .goals-summary { background: var(--deep); border-radius: 12px; padding: 14px 18px; margin-bottom: 12px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; text-align: center; }
+  .gs-label { font-size: 0.68rem; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px; }
+  .gs-value { font-family: 'Playfair Display', serif; font-size: 1.15rem; color: var(--gold); }
 
-  @media (max-width: 600px) { .summary-tiles { grid-template-columns: 1fr 1fr; } }
+  /* Goal card */
+  .goal-card { background: white; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 10px; overflow: hidden; transition: box-shadow 0.2s; }
+  .goal-card:hover { box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+  .goal-card-header { display: grid; grid-template-columns: auto 1fr auto auto; align-items: center; gap: 10px; padding: 13px 15px; cursor: pointer; user-select: none; }
+  .goal-cat-badge { width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; flex-shrink: 0; }
+  .goal-name-display { font-weight: 500; font-size: 0.92rem; color: var(--deep); }
+  .goal-meta-row { display: flex; align-items: center; gap: 6px; margin-top: 2px; flex-wrap: wrap; }
+  .goal-eta-badge { font-size: 0.7rem; font-weight: 500; padding: 2px 7px; border-radius: 20px; background: #dff0e5; color: var(--sage); }
+  .goal-eta-badge.slow { background: #f5edda; color: var(--gold); }
+  .goal-eta-badge.very-slow { background: #f5e0db; color: var(--rust); }
+  .goal-priority-badge { font-size: 0.66rem; padding: 2px 7px; border-radius: 20px; background: var(--warm); color: var(--light-text); text-transform: uppercase; letter-spacing: 0.04em; }
+  .goal-amount-display { font-family: 'Playfair Display', serif; font-size: 0.95rem; color: var(--deep); white-space: nowrap; }
+  .goal-chevron { color: var(--light-text); font-size: 0.75rem; transition: transform 0.2s; }
+  .goal-card.open .goal-chevron { transform: rotate(180deg); }
+  .goal-progress-thin { height: 3px; background: var(--warm); overflow: hidden; }
+  .goal-progress-fill { height: 100%; transition: width 0.5s ease; }
 
-  .tile {
-    background: white;
-    border-radius: 12px;
-    padding: 16px;
-    border: 1px solid var(--border);
-    text-align: center;
-  }
+  .goal-body { display: none; padding: 0 15px 15px; border-top: 1px solid var(--warm); }
+  .goal-card.open .goal-body { display: block; animation: fadeUp 0.2s ease both; }
+  .goal-edit-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 9px; margin-top: 13px; margin-bottom: 12px; }
+  @media (max-width: 520px) { .goal-edit-grid { grid-template-columns: 1fr 1fr; } }
+  .edit-field label { display: block; font-size: 0.7rem; font-weight: 500; color: var(--light-text); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+  .edit-field input, .edit-field select { width: 100%; border: 1px solid var(--border); border-radius: 8px; padding: 7px 10px; font-family: 'DM Sans', sans-serif; font-size: 0.88rem; color: var(--text); background: var(--cream); outline: none; transition: border-color 0.2s; }
+  .edit-field input:focus, .edit-field select:focus { border-color: var(--sage); }
 
-  .tile-icon { font-size: 1.3rem; margin-bottom: 6px; }
-  .tile-label { font-size: 0.72rem; color: var(--light-text); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
-  .tile-value { font-family: 'Playfair Display', serif; font-size: 1.25rem; color: var(--deep); font-weight: 700; }
-  .tile-sub { font-size: 0.75rem; color: var(--light-text); margin-top: 2px; }
+  .goal-stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; margin-bottom: 11px; }
+  @media (max-width: 520px) { .goal-stats-row { grid-template-columns: 1fr 1fr; } }
+  .g-stat { background: var(--cream); border-radius: 8px; padding: 9px 10px; text-align: center; }
+  .g-stat-label { font-size: 0.66rem; color: var(--light-text); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px; }
+  .g-stat-value { font-family: 'Playfair Display', serif; font-size: 0.9rem; color: var(--deep); font-weight: 700; }
 
-  .tile.highlight { background: var(--deep); border-color: var(--deep); }
-  .tile.highlight .tile-label { color: rgba(255,255,255,0.6); }
-  .tile.highlight .tile-value { color: var(--gold); }
-  .tile.highlight .tile-sub { color: rgba(255,255,255,0.5); }
+  .goal-actions { display: flex; justify-content: flex-end; margin-top: 10px; }
+  .btn-remove { background: none; border: 1px solid #e8d8d4; border-radius: 8px; padding: 5px 13px; font-size: 0.78rem; color: var(--rust); cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.2s; }
+  .btn-remove:hover { background: #fdf0ee; }
 
-  /* CHARTS */
-  .charts-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-bottom: 28px;
-    animation: fadeUp 0.6s 0.3s ease both;
-  }
-
-  @media (max-width: 600px) { .charts-grid { grid-template-columns: 1fr; } }
-
-  .chart-card {
-    background: white;
-    border-radius: 14px;
-    padding: 20px;
-    border: 1px solid var(--border);
-  }
-
-  .chart-card.wide { grid-column: 1 / -1; }
-
-  .chart-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 1rem;
-    color: var(--deep);
-    margin-bottom: 4px;
-  }
-
-  .chart-sub { font-size: 0.78rem; color: var(--light-text); margin-bottom: 16px; }
-
-  .chart-wrap { position: relative; }
-
-  /* GOALS SECTION */
-  .goals-section {
-    background: white;
-    border-radius: 14px;
-    padding: 24px;
-    border: 1px solid var(--border);
-    margin-bottom: 28px;
-    animation: fadeUp 0.6s 0.4s ease both;
-  }
-
-  .goals-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 18px;
-  }
-
-  .goals-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.1rem;
-    color: var(--deep);
-  }
-
-  .add-goal-btn {
-    background: var(--warm);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 6px 14px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.82rem;
-    color: var(--text);
-    cursor: pointer;
-    transition: background 0.2s;
-  }
-
-  .add-goal-btn:hover { background: var(--sage); color: white; border-color: var(--sage); }
-
-  .goal-item {
-    display: grid;
-    grid-template-columns: 1fr auto auto auto;
-    gap: 10px;
-    align-items: center;
-    padding: 12px 0;
-    border-bottom: 1px solid #f0e8d8;
-  }
-
-  .goal-item:last-child { border-bottom: none; }
-
-  .goal-name-input, .goal-amount-input {
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 8px 12px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.88rem;
-    color: var(--text);
-    background: var(--cream);
-    outline: none;
-    transition: border-color 0.2s;
-  }
-
-  .goal-name-input:focus, .goal-amount-input:focus { border-color: var(--sage); }
-  .goal-name-input { width: 100%; }
-  .goal-amount-input { width: 100px; text-align: right; }
-
-  .goal-progress-wrap { min-width: 80px; }
-
-  .goal-eta {
-    font-size: 0.75rem;
-    color: var(--sage);
-    font-weight: 500;
-    white-space: nowrap;
-  }
-
-  .goal-progress-bar {
-    height: 5px;
-    background: var(--warm);
-    border-radius: 3px;
-    overflow: hidden;
-    margin-top: 3px;
-  }
-
-  .goal-progress-fill {
-    height: 100%;
-    background: var(--sage);
-    border-radius: 3px;
-    transition: width 0.5s ease;
-  }
-
-  .remove-goal {
-    background: none;
-    border: none;
-    color: var(--light-text);
-    cursor: pointer;
-    font-size: 1rem;
-    padding: 4px;
-    border-radius: 4px;
-    transition: color 0.2s;
-  }
-
-  .remove-goal:hover { color: var(--rust); }
-
-  /* RETIREMENT PROJECTION */
-  .retirement-card {
-    background: var(--deep);
-    border-radius: 14px;
-    padding: 24px;
-    margin-bottom: 28px;
-    color: white;
-    animation: fadeUp 0.6s 0.5s ease both;
-  }
-
-  .retirement-card h3 {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.1rem;
-    color: var(--gold);
-    margin-bottom: 4px;
-  }
-
-  .retirement-card p { font-size: 0.82rem; color: rgba(255,255,255,0.6); margin-bottom: 16px; }
-
-  .retire-inputs {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 12px;
-    margin-bottom: 20px;
-  }
-
-  @media (max-width: 560px) { .retire-inputs { grid-template-columns: 1fr; } }
-
-  .retire-input-group label {
-    display: block;
-    font-size: 0.75rem;
-    color: rgba(255,255,255,0.55);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    margin-bottom: 6px;
-  }
-
-  .retire-input-group input {
-    width: 100%;
-    background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 8px;
-    padding: 10px 14px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 1rem;
-    font-weight: 500;
-    color: white;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-
+  /* RETIREMENT */
+  .retirement-card { background: var(--deep); border-radius: 14px; padding: 20px; margin-bottom: 14px; color: white; }
+  .retirement-card h3 { font-family: 'Playfair Display', serif; font-size: 1rem; color: var(--gold); margin-bottom: 3px; }
+  .retirement-card p { font-size: 0.78rem; color: rgba(255,255,255,0.55); margin-bottom: 13px; }
+  .retire-inputs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+  @media (max-width: 520px) { .retire-inputs { grid-template-columns: 1fr; } }
+  .retire-input-group label { display: block; font-size: 0.7rem; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+  .retire-input-group input { width: 100%; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 8px 12px; font-family: 'DM Sans', sans-serif; font-size: 0.93rem; font-weight: 500; color: white; outline: none; transition: border-color 0.2s; }
   .retire-input-group input:focus { border-color: var(--gold); }
   .retire-input-group input::-webkit-inner-spin-button { -webkit-appearance: none; }
+  .retire-result { background: rgba(255,255,255,0.06); border-radius: 10px; padding: 13px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; text-align: center; }
+  @media (max-width: 520px) { .retire-result { grid-template-columns: 1fr; } }
+  .retire-stat-label { font-size: 0.68rem; color: rgba(255,255,255,0.45); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 3px; }
+  .retire-stat-value { font-family: 'Playfair Display', serif; font-size: 1.25rem; color: var(--gold); }
 
-  .retire-result {
-    background: rgba(255,255,255,0.06);
-    border-radius: 10px;
-    padding: 16px;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-    text-align: center;
-  }
+  /* FOOTER */
+  .page-footer { text-align: center; margin-top: 28px; }
+  .page-footer a { display: inline-block; background: var(--sage); color: white; text-decoration: none; padding: 13px 34px; border-radius: 12px; font-size: 0.93rem; font-weight: 500; transition: background 0.2s; }
+  .page-footer a:hover { background: var(--deep); }
 
-  @media (max-width: 560px) { .retire-result { grid-template-columns: 1fr; } }
+  /* Category colors */
+  .cat-travel    { background: #dde8f5; }
+  .cat-home      { background: #dff0e5; }
+  .cat-vehicle   { background: #f5edda; }
+  .cat-education { background: #ebe0f5; }
+  .cat-emergency { background: #f5e0db; }
+  .cat-other     { background: var(--warm); }
 
-  .retire-stat-label { font-size: 0.72rem; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
-  .retire-stat-value { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--gold); }
-
-  /* SUBMIT */
-  .submit-section {
-    text-align: center;
-    animation: fadeUp 0.6s 0.6s ease both;
-  }
-
-  .submit-note {
-    font-size: 0.85rem;
-    color: var(--light-text);
-    margin-bottom: 16px;
-  }
-
-  .submit-btn {
-    display: inline-block;
-    background: var(--sage);
-    color: white;
-    border: none;
-    border-radius: 12px;
-    padding: 16px 40px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 1rem;
-    font-weight: 500;
-    cursor: pointer;
-    text-decoration: none;
-    transition: background 0.2s, transform 0.1s;
-    letter-spacing: 0.02em;
-  }
-
-  .submit-btn:hover { background: var(--deep); }
-  .submit-btn:active { transform: scale(0.98); }
-
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(16px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .section-divider {
-    border: none;
-    border-top: 1px solid var(--border);
-    margin: 8px 0 20px;
-  }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(13px); } to { opacity: 1; transform: translateY(0); } }
 </style>
 </head>
 <body>
@@ -441,375 +191,523 @@
     <p class="subtitle">Now that you've shared your thoughts — see where your money goes and where it could take you.</p>
   </header>
 
-  <!-- INPUTS -->
-  <div class="input-grid">
-    <div class="input-card">
-      <div class="input-label"><span class="dot" style="background:#7a9e87"></span>Monthly Take-Home Pay</div>
-      <div class="input-row">
-        <span class="currency">$</span>
-        <input type="number" id="income" value="5000" min="0" oninput="update()">
-      </div>
-    </div>
+  <!-- MODE SWITCHER -->
+  <div class="mode-switcher">
+    <span class="mode-label">View</span>
+    <select class="mode-select" id="mode-select" onchange="switchMode(this.value)">
+      <option value="budget">📋  Budget Overview</option>
+      <option value="goals">🎯  Personal Goals</option>
+      <option value="retirement">🌅  Retirement</option>
+    </select>
+    <span class="mode-desc" id="mode-desc">Track your monthly cash flow and savings rate</span>
+  </div>
 
-    <div class="input-card">
-      <div class="input-label"><span class="dot" style="background:#c0614a"></span>Monthly Bills & Fixed Expenses</div>
-      <div class="input-row">
-        <span class="currency">$</span>
-        <input type="number" id="bills" value="2200" min="0" oninput="update()">
+  <!-- ══════════════ PANEL: BUDGET ══════════════ -->
+  <div class="panel active" id="panel-budget">
+    <div class="input-grid">
+      <div class="input-card">
+        <div class="input-label"><span class="dot" style="background:#7a9e87"></span>Monthly Take-Home Pay</div>
+        <div class="input-row"><span class="currency">$</span><input type="number" id="b-income" value="5000" min="0" oninput="updateBudget()"></div>
       </div>
-    </div>
-
-    <div class="input-card">
-      <div class="input-label"><span class="dot" style="background:#c9a84c"></span>Emergency Fund Goal (months)</div>
-      <div class="slider-val" id="ef-val">6 months</div>
-      <div class="slider-wrap">
-        <input type="range" id="ef-months" min="1" max="12" value="6" oninput="update()">
+      <div class="input-card">
+        <div class="input-label"><span class="dot" style="background:#c0614a"></span>Monthly Bills & Fixed Expenses</div>
+        <div class="input-row"><span class="currency">$</span><input type="number" id="b-bills" value="2200" min="0" oninput="updateBudget()"></div>
+      </div>
+      <div class="input-card">
+        <div class="input-label"><span class="dot" style="background:#c9a84c"></span>Emergency Fund Goal</div>
+        <div class="slider-val" id="b-ef-val">6 months</div>
+        <input type="range" id="b-ef-months" min="1" max="12" value="6" oninput="updateBudget()">
         <div class="slider-labels"><span>1 mo</span><span>12 mo</span></div>
       </div>
-    </div>
-
-    <div class="input-card">
-      <div class="input-label"><span class="dot" style="background:#5b8ab0"></span>% of Leftover to Save</div>
-      <div class="slider-val" id="save-pct-val">50%</div>
-      <div class="slider-wrap">
-        <input type="range" id="save-pct" min="5" max="100" step="5" value="50" oninput="update()">
+      <div class="input-card">
+        <div class="input-label"><span class="dot" style="background:#5b8ab0"></span>% of Leftover to Save</div>
+        <div class="slider-val" id="b-save-pct-val">50%</div>
+        <input type="range" id="b-save-pct" min="5" max="100" step="5" value="50" oninput="updateBudget()">
         <div class="slider-labels"><span>5%</span><span>100%</span></div>
       </div>
     </div>
-  </div>
 
-  <!-- SUMMARY TILES -->
-  <div class="summary-tiles">
-    <div class="tile">
-      <div class="tile-icon">💸</div>
-      <div class="tile-label">Left After Bills</div>
-      <div class="tile-value" id="tile-leftover">$0</div>
-      <div class="tile-sub">per month</div>
+    <div class="tiles">
+      <div class="tile"><div class="tile-icon">💸</div><div class="tile-label">Left After Bills</div><div class="tile-value" id="b-tile-leftover">$0</div><div class="tile-sub">per month</div></div>
+      <div class="tile"><div class="tile-icon">🏦</div><div class="tile-label">Monthly Savings</div><div class="tile-value" id="b-tile-savings">$0</div><div class="tile-sub">per month</div></div>
+      <div class="tile"><div class="tile-icon">🛟</div><div class="tile-label">Emergency Target</div><div class="tile-value" id="b-tile-ef">$0</div><div class="tile-sub" id="b-tile-ef-eta">—</div></div>
+      <div class="tile hi"><div class="tile-icon">✨</div><div class="tile-label">Annual Savings</div><div class="tile-value" id="b-tile-annual">$0</div><div class="tile-sub">per year</div></div>
     </div>
-    <div class="tile">
-      <div class="tile-icon">🏦</div>
-      <div class="tile-label">Monthly Savings</div>
-      <div class="tile-value" id="tile-savings">$0</div>
-      <div class="tile-sub">per month</div>
+
+    <div class="charts-grid">
+      <div class="chart-card" style="margin-bottom:0">
+        <div class="card-title">Where Your Money Goes</div>
+        <div class="card-sub">Monthly breakdown</div>
+        <canvas id="b-donut" height="210"></canvas>
+      </div>
+      <div class="chart-card" style="margin-bottom:0">
+        <div class="card-title">Emergency Fund Timeline</div>
+        <div class="card-sub">Month-by-month progress</div>
+        <canvas id="b-ef-chart" height="210"></canvas>
+      </div>
     </div>
-    <div class="tile">
-      <div class="tile-icon">🛟</div>
-      <div class="tile-label">Emergency Fund</div>
-      <div class="tile-value" id="tile-ef-target">$0</div>
-      <div class="tile-sub" id="tile-ef-eta">—</div>
-    </div>
-    <div class="tile highlight">
-      <div class="tile-icon">✨</div>
-      <div class="tile-label">Annual Savings</div>
-      <div class="tile-value" id="tile-annual">$0</div>
-      <div class="tile-sub">per year</div>
+    <div class="chart-card" style="margin-top:13px;">
+      <div class="card-title">Savings Growth Over 5 Years</div>
+      <div class="card-sub">Cumulative at your current rate</div>
+      <canvas id="b-growth" height="130"></canvas>
     </div>
   </div>
 
-  <!-- CHARTS -->
-  <div class="charts-grid">
-    <div class="chart-card">
-      <div class="chart-title">Where Your Money Goes</div>
-      <div class="chart-sub">Monthly breakdown</div>
-      <div class="chart-wrap"><canvas id="donut-chart" height="200"></canvas></div>
+  <!-- ══════════════ PANEL: GOALS ══════════════ -->
+  <div class="panel" id="panel-goals">
+    <div class="input-grid">
+      <div class="input-card">
+        <div class="input-label"><span class="dot" style="background:#7a9e87"></span>Monthly Take-Home Pay</div>
+        <div class="input-row"><span class="currency">$</span><input type="number" id="g-income" value="5000" min="0" oninput="updateGoalsPanel()"></div>
+      </div>
+      <div class="input-card">
+        <div class="input-label"><span class="dot" style="background:#5b8ab0"></span>Monthly Amount Available to Save</div>
+        <div class="input-row"><span class="currency">$</span><input type="number" id="g-monthly-save" value="1000" min="0" oninput="updateGoalsPanel()"></div>
+      </div>
     </div>
-    <div class="chart-card">
-      <div class="chart-title">Emergency Fund Timeline</div>
-      <div class="chart-sub">Months to reach your goal</div>
-      <div class="chart-wrap"><canvas id="ef-chart" height="200"></canvas></div>
-    </div>
-    <div class="chart-card wide">
-      <div class="chart-title">Savings Growth Over 5 Years</div>
-      <div class="chart-sub">Cumulative savings at your current rate</div>
-      <div class="chart-wrap"><canvas id="growth-chart" height="160"></canvas></div>
-    </div>
-  </div>
 
-  <!-- GOALS -->
-  <div class="goals-section">
-    <div class="goals-header">
-      <div>
-        <div class="goals-title">🎯 Personal Savings Goals</div>
-        <div style="font-size:0.78rem;color:var(--light-text);margin-top:2px;">See how long each goal will take at your current rate</div>
+    <div class="avail-bar">
+      <span class="avail-label">Saving</span>
+      <span class="avail-amount" id="g-avail-amt">$1,000/mo</span>
+      <div class="avail-track"><div class="avail-fill" id="g-avail-fill" style="width:0%"></div></div>
+      <span class="avail-note" id="g-avail-pct">0% of income</span>
+    </div>
+
+    <div class="goals-summary">
+      <div><div class="gs-label">Total Goals</div><div class="gs-value" id="g-sum-count">0</div></div>
+      <div><div class="gs-label">Total Needed</div><div class="gs-value" id="g-sum-total">$0</div></div>
+      <div><div class="gs-label">Longest Goal</div><div class="gs-value" id="g-sum-longest">—</div></div>
+    </div>
+
+    <div class="goals-toolbar">
+      <div class="goals-toolbar-left">
+        <select class="sort-select" id="g-sort" onchange="renderGoals()">
+          <option value="priority">Sort: Priority</option>
+          <option value="eta">Sort: Soonest</option>
+          <option value="amount">Sort: Amount</option>
+        </select>
+        <select class="filter-select" id="g-filter" onchange="renderGoals()">
+          <option value="all">All Categories</option>
+          <option value="travel">✈️ Travel</option>
+          <option value="home">🏠 Home</option>
+          <option value="vehicle">🚗 Vehicle</option>
+          <option value="education">🎓 Education</option>
+          <option value="emergency">🛟 Emergency</option>
+          <option value="other">⭐ Other</option>
+        </select>
       </div>
       <button class="add-goal-btn" onclick="addGoal()">+ Add Goal</button>
     </div>
+
     <div id="goals-list"></div>
+
+    <div class="chart-card">
+      <div class="card-title">All Goals — Years to Complete</div>
+      <div class="card-sub">Based on your savings split evenly across goals · Green = high priority</div>
+      <canvas id="g-bar-chart" height="150"></canvas>
+    </div>
   </div>
 
-  <!-- RETIREMENT -->
-  <div class="retirement-card">
-    <h3>🌅 Retirement Projection</h3>
-    <p>A rough estimate based on your savings rate and timeline</p>
-    <div class="retire-inputs">
-      <div class="retire-input-group">
-        <label>Current Age</label>
-        <input type="number" id="cur-age" value="35" min="18" max="70" oninput="updateRetirement()">
+  <!-- ══════════════ PANEL: RETIREMENT ══════════════ -->
+  <div class="panel" id="panel-retirement">
+    <div class="input-grid">
+      <div class="input-card">
+        <div class="input-label"><span class="dot" style="background:#7a9e87"></span>Monthly Take-Home Pay</div>
+        <div class="input-row"><span class="currency">$</span><input type="number" id="r-income" value="5000" min="0" oninput="updateRetirement()"></div>
       </div>
-      <div class="retire-input-group">
-        <label>Target Retirement Age</label>
-        <input type="number" id="ret-age" value="65" min="40" max="80" oninput="updateRetirement()">
-      </div>
-      <div class="retire-input-group">
-        <label>Current Retirement Savings</label>
-        <input type="number" id="cur-savings" value="20000" min="0" oninput="updateRetirement()">
+      <div class="input-card">
+        <div class="input-label"><span class="dot" style="background:#c9a84c"></span>Monthly Retirement Contribution</div>
+        <div class="input-row"><span class="currency">$</span><input type="number" id="r-contrib" value="500" min="0" oninput="updateRetirement()"></div>
       </div>
     </div>
-    <div class="retire-result">
-      <div>
-        <div class="retire-stat-label">Years to Retire</div>
-        <div class="retire-stat-value" id="ret-years">—</div>
+
+    <div class="retirement-card">
+      <h3>🌅 Retirement Projection</h3>
+      <p>Estimates based on 6% annual growth, 4% withdrawal rule, 20-year retirement. This is illustrative only.</p>
+      <div class="retire-inputs">
+        <div class="retire-input-group"><label>Current Age</label><input type="number" id="r-cur-age" value="35" min="18" max="70" oninput="updateRetirement()"></div>
+        <div class="retire-input-group"><label>Target Retirement Age</label><input type="number" id="r-ret-age" value="65" min="40" max="80" oninput="updateRetirement()"></div>
+        <div class="retire-input-group"><label>Current Retirement Savings</label><input type="number" id="r-cur-savings" value="20000" min="0" oninput="updateRetirement()"></div>
       </div>
-      <div>
-        <div class="retire-stat-label">Est. Nest Egg</div>
-        <div class="retire-stat-value" id="ret-nest">—</div>
-      </div>
-      <div>
-        <div class="retire-stat-label">Monthly in Retirement*</div>
-        <div class="retire-stat-value" id="ret-monthly">—</div>
+      <div class="retire-result">
+        <div><div class="retire-stat-label">Years to Retire</div><div class="retire-stat-value" id="r-years">—</div></div>
+        <div><div class="retire-stat-label">Est. Nest Egg</div><div class="retire-stat-value" id="r-nest">—</div></div>
+        <div><div class="retire-stat-label">Monthly in Retirement</div><div class="retire-stat-value" id="r-monthly">—</div></div>
       </div>
     </div>
-    <p style="margin-top:12px;margin-bottom:0;font-size:0.72rem;color:rgba(255,255,255,0.35);">*Assumes 6% annual growth, 4% withdrawal rule, 20 year retirement. This is an estimate only.</p>
+
+    <div class="tiles" style="grid-template-columns: repeat(3,1fr);">
+      <div class="tile"><div class="tile-icon">📈</div><div class="tile-label">% of Pay Saved</div><div class="tile-value" id="r-pct">0%</div><div class="tile-sub">target: 15%+</div></div>
+      <div class="tile"><div class="tile-icon">📅</div><div class="tile-label">Annual Contribution</div><div class="tile-value" id="r-annual">$0</div><div class="tile-sub">per year</div></div>
+      <div class="tile hi"><div class="tile-icon">🎯</div><div class="tile-label">On Track?</div><div class="tile-value" id="r-track">—</div><div class="tile-sub" id="r-track-sub">—</div></div>
+    </div>
+
+    <div class="chart-card">
+      <div class="card-title">Projected Balance Over Time</div>
+      <div class="card-sub">At 6% annual growth with your current contributions</div>
+      <canvas id="r-chart" height="180"></canvas>
+    </div>
   </div>
 
-  <!-- SUBMIT -->
-  <div class="submit-section">
-    <p class="submit-note">All done exploring? Your answers from the check-in are already on their way.</p>
-    <a href="index.html" class="submit-btn">← Back to the Check-In</a>
+  <div class="page-footer">
+    <a href="index.html">← Back to the Check-In</a>
   </div>
 
 </div>
-
 <script>
-  // ── CHART INSTANCES ──
-  let donutChart, efChart, growthChart;
+// ─── HELPERS ───
+function fmt(n) {
+  if (n >= 1000000) return '$' + (n/1000000).toFixed(1) + 'M';
+  if (n >= 1000)    return '$' + (n/1000).toFixed(0) + 'k';
+  return '$' + Math.round(n).toLocaleString();
+}
+function fmtFull(n) { return '$' + Math.round(n).toLocaleString(); }
 
-  // ── DEFAULT GOALS ──
-  let goals = [
-    { name: 'Vacation Fund', amount: 3000 },
-    { name: 'New Car', amount: 15000 },
-  ];
+// ─── MODE SWITCH ───
+const modeDescs = {
+  budget:     'Track your monthly cash flow and savings rate',
+  goals:      'Plan and prioritize your personal savings goals',
+  retirement: 'Project your retirement nest egg over time'
+};
+function switchMode(val) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + val).classList.add('active');
+  document.getElementById('mode-desc').textContent = modeDescs[val];
+}
 
-  function fmt(n) {
-    if (n >= 1000000) return '$' + (n/1000000).toFixed(1) + 'M';
-    if (n >= 1000) return '$' + Math.round(n/1000) + 'k';
-    return '$' + Math.round(n).toLocaleString();
-  }
+// ─── BUDGET ───
+let bDonut, bEf, bGrowth;
+function updateBudget() {
+  const income   = parseFloat(document.getElementById('b-income').value) || 0;
+  const bills    = parseFloat(document.getElementById('b-bills').value)  || 0;
+  const efMonths = parseInt(document.getElementById('b-ef-months').value);
+  const savePct  = parseInt(document.getElementById('b-save-pct').value);
 
-  function fmtFull(n) {
-    return '$' + Math.round(n).toLocaleString();
-  }
+  document.getElementById('b-ef-val').textContent      = efMonths + ' month' + (efMonths > 1 ? 's' : '');
+  document.getElementById('b-save-pct-val').textContent = savePct + '%';
 
-  function update() {
-    const income = parseFloat(document.getElementById('income').value) || 0;
-    const bills  = parseFloat(document.getElementById('bills').value)  || 0;
-    const efMonths = parseInt(document.getElementById('ef-months').value);
-    const savePct  = parseInt(document.getElementById('save-pct').value);
+  const leftover = Math.max(0, income - bills);
+  const savings  = leftover * (savePct / 100);
+  const spending = leftover - savings;
+  const efTarget = bills * efMonths;
+  const efEta    = savings > 0 ? Math.ceil(efTarget / savings) : null;
 
-    document.getElementById('ef-val').textContent = efMonths + ' month' + (efMonths > 1 ? 's' : '');
-    document.getElementById('save-pct-val').textContent = savePct + '%';
+  document.getElementById('b-tile-leftover').textContent = fmtFull(leftover);
+  document.getElementById('b-tile-savings').textContent  = fmtFull(savings);
+  document.getElementById('b-tile-ef').textContent       = fmtFull(efTarget);
+  document.getElementById('b-tile-annual').textContent   = fmtFull(savings * 12);
+  document.getElementById('b-tile-ef-eta').textContent   = efEta
+    ? (efEta <= 12 ? efEta + ' mo to goal' : Math.ceil(efEta/12) + ' yrs to goal') : 'Save more';
 
-    const leftover  = Math.max(0, income - bills);
-    const monthlySavings = leftover * (savePct / 100);
-    const monthlySpend   = leftover - monthlySavings;
-    const annualSavings  = monthlySavings * 12;
-    const efTarget  = bills * efMonths;
-    const efEtaMonths = monthlySavings > 0 ? Math.ceil(efTarget / monthlySavings) : null;
-
-    // Tiles
-    document.getElementById('tile-leftover').textContent = fmtFull(leftover);
-    document.getElementById('tile-savings').textContent  = fmtFull(monthlySavings);
-    document.getElementById('tile-ef-target').textContent = fmtFull(efTarget);
-    document.getElementById('tile-annual').textContent   = fmtFull(annualSavings);
-    document.getElementById('tile-ef-eta').textContent  = efEtaMonths
-      ? (efEtaMonths <= 12 ? efEtaMonths + ' mo to goal' : Math.ceil(efEtaMonths/12) + ' yrs to goal')
-      : 'increase savings';
-
-    // Donut
-    const donutData = [bills, monthlySavings, monthlySpend];
-    if (!donutChart) {
-      donutChart = new Chart(document.getElementById('donut-chart'), {
-        type: 'doughnut',
-        data: {
-          labels: ['Bills & Fixed', 'Savings', 'Spending Money'],
-          datasets: [{ data: donutData, backgroundColor: ['#c0614a','#7a9e87','#c9a84c'], borderWidth: 0, hoverOffset: 6 }]
-        },
-        options: {
-          cutout: '68%',
-          plugins: { legend: { position: 'bottom', labels: { font: { family: 'DM Sans', size: 11 }, color: '#7a6e62', padding: 12, boxWidth: 10 } } },
-          animation: { duration: 600 }
-        }
-      });
-    } else {
-      donutChart.data.datasets[0].data = donutData;
-      donutChart.update();
-    }
-
-    // EF chart — bar showing month-by-month
-    const efLabels = [], efValues = [];
-    let running = 0;
-    const months = efEtaMonths ? Math.min(efEtaMonths, 24) : 12;
-    for (let m = 1; m <= months; m++) {
-      running = Math.min(running + monthlySavings, efTarget);
-      if (m % Math.max(1, Math.floor(months/8)) === 0 || m === months) {
-        efLabels.push('Mo ' + m);
-        efValues.push(Math.round(running));
-      }
-    }
-    if (!efChart) {
-      efChart = new Chart(document.getElementById('ef-chart'), {
-        type: 'bar',
-        data: {
-          labels: efLabels,
-          datasets: [{
-            label: 'Saved',
-            data: efValues,
-            backgroundColor: efValues.map((v,i) => i === efValues.length-1 ? '#7a9e87' : 'rgba(122,158,135,0.35)'),
-            borderRadius: 5, borderSkipped: false
-          },{
-            label: 'Goal',
-            data: efValues.map(() => efTarget),
-            type: 'line',
-            borderColor: '#c9a84c',
-            borderWidth: 2,
-            borderDash: [5,4],
-            pointRadius: 0,
-            fill: false
-          }]
-        },
-        options: {
-          plugins: { legend: { display: false } },
-          scales: {
-            x: { grid: { display: false }, ticks: { font: { family: 'DM Sans', size: 10 }, color: '#7a6e62' } },
-            y: { grid: { color: '#f0e8d8' }, ticks: { font: { family: 'DM Sans', size: 10 }, color: '#7a6e62', callback: v => fmt(v) } }
-          },
-          animation: { duration: 600 }
-        }
-      });
-    } else {
-      efChart.data.labels = efLabels;
-      efChart.data.datasets[0].data = efValues;
-      efChart.data.datasets[0].backgroundColor = efValues.map((v,i) => i === efValues.length-1 ? '#7a9e87' : 'rgba(122,158,135,0.35)');
-      efChart.data.datasets[1].data = efValues.map(() => efTarget);
-      efChart.update();
-    }
-
-    // 5-year growth
-    const growthLabels = [], growthData = [];
-    let cumulative = 0;
-    for (let m = 1; m <= 60; m++) {
-      cumulative += monthlySavings;
-      if (m % 6 === 0) {
-        growthLabels.push('Yr ' + (m/12).toFixed(1).replace('.0',''));
-        growthData.push(Math.round(cumulative));
-      }
-    }
-    if (!growthChart) {
-      growthChart = new Chart(document.getElementById('growth-chart'), {
-        type: 'line',
-        data: {
-          labels: growthLabels,
-          datasets: [{
-            label: 'Total Saved',
-            data: growthData,
-            borderColor: '#7a9e87',
-            backgroundColor: 'rgba(122,158,135,0.1)',
-            fill: true,
-            tension: 0.4,
-            pointRadius: 4,
-            pointBackgroundColor: '#7a9e87',
-            pointBorderColor: 'white',
-            pointBorderWidth: 2
-          }]
-        },
-        options: {
-          plugins: { legend: { display: false } },
-          scales: {
-            x: { grid: { display: false }, ticks: { font: { family: 'DM Sans', size: 11 }, color: '#7a6e62' } },
-            y: { grid: { color: '#f0e8d8' }, ticks: { font: { family: 'DM Sans', size: 11 }, color: '#7a6e62', callback: v => fmt(v) } }
-          },
-          animation: { duration: 600 }
-        }
-      });
-    } else {
-      growthChart.data.labels = growthLabels;
-      growthChart.data.datasets[0].data = growthData;
-      growthChart.update();
-    }
-
-    // Goals
-    renderGoals(monthlySavings);
-    updateRetirement(monthlySavings);
-  }
-
-  function getMonthlySavings() {
-    const income = parseFloat(document.getElementById('income').value) || 0;
-    const bills  = parseFloat(document.getElementById('bills').value)  || 0;
-    const savePct  = parseInt(document.getElementById('save-pct').value);
-    return Math.max(0, income - bills) * (savePct / 100);
-  }
-
-  function renderGoals(ms) {
-    const monthlySavings = ms !== undefined ? ms : getMonthlySavings();
-    const list = document.getElementById('goals-list');
-    list.innerHTML = '';
-
-    if (goals.length === 0) {
-      list.innerHTML = '<p style="color:var(--light-text);font-size:0.88rem;text-align:center;padding:16px 0;">No goals yet — add one above!</p>';
-      return;
-    }
-
-    goals.forEach((g, i) => {
-      const etaMonths = monthlySavings > 0 ? Math.ceil(g.amount / monthlySavings) : null;
-      const etaText = !etaMonths ? 'Increase savings' :
-                      etaMonths <= 12 ? etaMonths + ' months' :
-                      (etaMonths / 12).toFixed(1) + ' years';
-      const pct = monthlySavings > 0 ? Math.min(100, (monthlySavings / g.amount) * 100 * 3) : 0;
-
-      const row = document.createElement('div');
-      row.className = 'goal-item';
-      row.innerHTML = `
-        <input class="goal-name-input" type="text" value="${g.name}" placeholder="Goal name" oninput="goals[${i}].name=this.value">
-        <input class="goal-amount-input" type="number" value="${g.amount}" placeholder="Amount" oninput="goals[${i}].amount=parseFloat(this.value)||0; renderGoals()">
-        <div class="goal-progress-wrap">
-          <div class="goal-eta">${etaText}</div>
-          <div class="goal-progress-bar"><div class="goal-progress-fill" style="width:${pct}%"></div></div>
-        </div>
-        <button class="remove-goal" onclick="goals.splice(${i},1); renderGoals()" title="Remove">✕</button>
-      `;
-      list.appendChild(row);
+  const dd = [bills, savings, spending];
+  if (!bDonut) {
+    bDonut = new Chart(document.getElementById('b-donut'), {
+      type: 'doughnut',
+      data: { labels: ['Bills', 'Savings', 'Spending'], datasets: [{ data: dd, backgroundColor: ['#c0614a','#7a9e87','#c9a84c'], borderWidth: 0, hoverOffset: 5 }] },
+      options: { cutout: '68%', plugins: { legend: { position: 'bottom', labels: { font: { family: 'DM Sans', size: 11 }, color: '#7a6e62', padding: 10, boxWidth: 9 } } }, animation: { duration: 500 } }
     });
+  } else { bDonut.data.datasets[0].data = dd; bDonut.update(); }
+
+  const efLabels = [], efVals = [];
+  let run = 0;
+  const mos = efEta ? Math.min(efEta, 24) : 12;
+  for (let m = 1; m <= mos; m++) {
+    run = Math.min(run + savings, efTarget);
+    if (m % Math.max(1, Math.floor(mos / 8)) === 0 || m === mos) { efLabels.push('Mo ' + m); efVals.push(Math.round(run)); }
+  }
+  if (!bEf) {
+    bEf = new Chart(document.getElementById('b-ef-chart'), {
+      type: 'bar',
+      data: { labels: efLabels, datasets: [
+        { data: efVals, backgroundColor: efVals.map((_,i) => i===efVals.length-1?'#7a9e87':'rgba(122,158,135,0.35)'), borderRadius: 4, borderSkipped: false },
+        { data: efVals.map(() => efTarget), type: 'line', borderColor: '#c9a84c', borderWidth: 2, borderDash: [5,4], pointRadius: 0, fill: false }
+      ]},
+      options: { plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { font: { family:'DM Sans', size:10 }, color:'#7a6e62' } }, y: { grid: { color: '#f0e8d8' }, ticks: { font:{family:'DM Sans',size:10}, color:'#7a6e62', callback: v => fmt(v) } } }, animation: { duration: 500 } }
+    });
+  } else {
+    bEf.data.labels = efLabels;
+    bEf.data.datasets[0].data = efVals;
+    bEf.data.datasets[0].backgroundColor = efVals.map((_,i) => i===efVals.length-1?'#7a9e87':'rgba(122,158,135,0.35)');
+    bEf.data.datasets[1].data = efVals.map(() => efTarget);
+    bEf.update();
   }
 
-  function addGoal() {
-    goals.push({ name: 'New Goal', amount: 5000 });
-    renderGoals();
+  const gLabels=[], gData=[];
+  let cum=0;
+  for (let m=1; m<=60; m++) { cum += savings; if (m%6===0) { gLabels.push('Yr '+(m/12)); gData.push(Math.round(cum)); } }
+  if (!bGrowth) {
+    bGrowth = new Chart(document.getElementById('b-growth'), {
+      type: 'line',
+      data: { labels: gLabels, datasets: [{ data: gData, borderColor: '#7a9e87', backgroundColor: 'rgba(122,158,135,0.1)', fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#7a9e87', pointBorderColor: 'white', pointBorderWidth: 2 }] },
+      options: { plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { font:{family:'DM Sans',size:11}, color:'#7a6e62' } }, y: { grid: { color: '#f0e8d8' }, ticks: { font:{family:'DM Sans',size:11}, color:'#7a6e62', callback: v => fmt(v) } } }, animation: { duration: 500 } }
+    });
+  } else { bGrowth.data.labels=gLabels; bGrowth.data.datasets[0].data=gData; bGrowth.update(); }
+}
+
+// ─── GOALS ───
+const catEmoji = { travel:'✈️', home:'🏠', vehicle:'🚗', education:'🎓', emergency:'🛟', other:'⭐' };
+const catColors= { travel:'#dde8f5', home:'#dff0e5', vehicle:'#f5edda', education:'#ebe0f5', emergency:'#f5e0db', other:'#f0e8d8' };
+const priOrder = { high:0, medium:1, low:2 };
+
+let goals = [
+  { id:1, name:'Europe Vacation',  category:'travel',    amount:6000,  saved:800,  priority:'high'   },
+  { id:2, name:'New Car',          category:'vehicle',   amount:15000, saved:2000, priority:'medium' },
+  { id:3, name:'Home Renovation',  category:'home',      amount:20000, saved:500,  priority:'low'    },
+];
+let nextId = 4;
+let miniCharts = {};
+
+function addGoal() {
+  goals.push({ id:nextId++, name:'New Goal', category:'other', amount:5000, saved:0, priority:'medium' });
+  updateGoalsPanel();
+  setTimeout(() => {
+    const cards = document.querySelectorAll('.goal-card');
+    const last = cards[cards.length - 1];
+    if (last) last.classList.add('open');
+  }, 30);
+}
+
+function removeGoal(id) {
+  goals = goals.filter(g => g.id !== id);
+  if (miniCharts[id]) { miniCharts[id].destroy(); delete miniCharts[id]; }
+  updateGoalsPanel();
+}
+
+function updateGoalField(id, field, value) {
+  const g = goals.find(g => g.id === id);
+  if (g) g[field] = (field==='amount'||field==='saved') ? (parseFloat(value)||0) : value;
+  updateGoalsPanel();
+}
+
+function toggleGoalCard(id) {
+  document.getElementById('goal-card-' + id).classList.toggle('open');
+}
+
+function updateGoalsPanel() {
+  const monthly = parseFloat(document.getElementById('g-monthly-save').value) || 0;
+  const income  = parseFloat(document.getElementById('g-income').value) || 0;
+  const pctOfIncome = income > 0 ? Math.min(100, (monthly/income)*100) : 0;
+
+  document.getElementById('g-avail-amt').textContent  = fmtFull(monthly) + '/mo';
+  document.getElementById('g-avail-fill').style.width = pctOfIncome + '%';
+  document.getElementById('g-avail-pct').textContent  = pctOfIncome.toFixed(0) + '% of income';
+
+  const perGoal = goals.length > 0 && monthly > 0 ? monthly / goals.length : 0;
+  const totalNeeded = goals.reduce((s,g) => s + Math.max(0, g.amount - g.saved), 0);
+  let longestEta = 0;
+  goals.forEach(g => {
+    const rem = Math.max(0, g.amount - g.saved);
+    const eta = perGoal > 0 ? rem / perGoal : 0;
+    if (eta > longestEta) longestEta = eta;
+  });
+
+  document.getElementById('g-sum-count').textContent   = goals.length;
+  document.getElementById('g-sum-total').textContent   = fmt(totalNeeded);
+  document.getElementById('g-sum-longest').textContent = longestEta > 0
+    ? (longestEta<=12 ? Math.ceil(longestEta)+' mo' : (longestEta/12).toFixed(1)+' yrs') : '—';
+
+  renderGoals(monthly, perGoal);
+  updateGoalsChart(monthly);
+}
+
+function renderGoals(monthly, perGoal) {
+  if (monthly === undefined) monthly = parseFloat(document.getElementById('g-monthly-save').value)||0;
+  if (perGoal === undefined) perGoal = goals.length > 0 ? monthly/goals.length : 0;
+
+  const sort   = document.getElementById('g-sort').value;
+  const filter = document.getElementById('g-filter').value;
+
+  let filtered = filter === 'all' ? [...goals] : goals.filter(g => g.category === filter);
+  filtered.sort((a,b) => {
+    if (sort==='priority') return (priOrder[a.priority]||1) - (priOrder[b.priority]||1);
+    if (sort==='amount')   return a.amount - b.amount;
+    if (sort==='eta') {
+      const etaA = perGoal>0 ? Math.max(0,a.amount-a.saved)/perGoal : Infinity;
+      const etaB = perGoal>0 ? Math.max(0,b.amount-b.saved)/perGoal : Infinity;
+      return etaA - etaB;
+    }
+    return 0;
+  });
+
+  const openIds = new Set();
+  document.querySelectorAll('.goal-card.open').forEach(c => openIds.add(parseInt(c.dataset.id)));
+
+  const list = document.getElementById('goals-list');
+  list.innerHTML = '';
+
+  if (filtered.length === 0) {
+    list.innerHTML = '<p style="color:var(--light-text);font-size:0.86rem;text-align:center;padding:18px 0;">No goals in this category.</p>';
+    updateGoalsChart(monthly);
+    return;
   }
 
-  function updateRetirement(ms) {
-    const monthlySavings = ms !== undefined ? ms : getMonthlySavings();
-    const curAge = parseInt(document.getElementById('cur-age').value) || 35;
-    const retAge = parseInt(document.getElementById('ret-age').value) || 65;
-    const curSavings = parseFloat(document.getElementById('cur-savings').value) || 0;
+  filtered.forEach(g => {
+    const remaining  = Math.max(0, g.amount - g.saved);
+    const etaMonths  = perGoal > 0 ? Math.ceil(remaining/perGoal) : null;
+    const etaText    = !etaMonths ? 'Add savings' : etaMonths<=12 ? etaMonths+' months' : (etaMonths/12).toFixed(1)+' years';
+    const etaClass   = !etaMonths ? 'very-slow' : etaMonths<=12 ? '' : etaMonths<=36 ? 'slow' : 'very-slow';
+    const progPct    = g.amount > 0 ? Math.min(100,(g.saved/g.amount)*100) : 0;
+    const progColor  = etaClass==='' ? 'var(--sage)' : etaClass==='slow' ? 'var(--gold)' : 'var(--rust)';
+    const isOpen     = openIds.has(g.id);
 
-    const years = Math.max(0, retAge - curAge);
-    const months = years * 12;
-    const annualRate = 0.06 / 12;
+    // Mini sparkline data
+    const steps      = etaMonths ? Math.min(etaMonths, 12) : 12;
+    const miniLabels = Array.from({length:steps+1},(_,i)=> i===0?'Now':(i%Math.max(1,Math.floor(steps/4))===0||i===steps?'Mo '+i:''));
+    const miniData   = Array.from({length:steps+1},(_,i)=> Math.min(g.saved + perGoal*i, g.amount));
 
-    // FV of current savings
-    const fvCurrent = curSavings * Math.pow(1 + annualRate, months);
-    // FV of monthly contributions
-    const fvContrib = monthlySavings * ((Math.pow(1 + annualRate, months) - 1) / annualRate);
-    const nestEgg = fvCurrent + fvContrib;
-    const monthlyInRetirement = nestEgg * 0.04 / 12;
+    const card = document.createElement('div');
+    card.className = 'goal-card' + (isOpen ? ' open' : '');
+    card.id = 'goal-card-' + g.id;
+    card.dataset.id = g.id;
+    card.innerHTML = `
+      <div class="goal-card-header" onclick="toggleGoalCard(${g.id})">
+        <div class="goal-cat-badge" style="background:${catColors[g.category]||catColors.other}">${catEmoji[g.category]||'⭐'}</div>
+        <div>
+          <div class="goal-name-display">${g.name}</div>
+          <div class="goal-meta-row">
+            <span class="goal-eta-badge ${etaClass}">${etaText}</span>
+            <span class="goal-priority-badge">${g.priority}</span>
+          </div>
+        </div>
+        <div class="goal-amount-display">${fmtFull(g.amount)}</div>
+        <span class="goal-chevron">▼</span>
+      </div>
+      <div class="goal-progress-thin"><div class="goal-progress-fill" style="width:${progPct}%;background:${progColor}"></div></div>
+      <div class="goal-body">
+        <div class="goal-edit-grid">
+          <div class="edit-field"><label>Goal Name</label><input type="text" value="${g.name}" oninput="updateGoalField(${g.id},'name',this.value)"></div>
+          <div class="edit-field"><label>Target Amount</label><input type="number" value="${g.amount}" oninput="updateGoalField(${g.id},'amount',this.value)"></div>
+          <div class="edit-field"><label>Already Saved</label><input type="number" value="${g.saved}" oninput="updateGoalField(${g.id},'saved',this.value)"></div>
+          <div class="edit-field"><label>Category</label>
+            <select onchange="updateGoalField(${g.id},'category',this.value)">
+              ${['travel','home','vehicle','education','emergency','other'].map(c=>`<option value="${c}"${g.category===c?' selected':''}>${catEmoji[c]} ${c[0].toUpperCase()+c.slice(1)}</option>`).join('')}
+            </select>
+          </div>
+          <div class="edit-field"><label>Priority</label>
+            <select onchange="updateGoalField(${g.id},'priority',this.value)">
+              ${['high','medium','low'].map(p=>`<option value="${p}"${g.priority===p?' selected':''}>${p[0].toUpperCase()+p.slice(1)}</option>`).join('')}
+            </select>
+          </div>
+        </div>
+        <div class="goal-stats-row">
+          <div class="g-stat"><div class="g-stat-label">Saved So Far</div><div class="g-stat-value">${fmtFull(g.saved)}</div></div>
+          <div class="g-stat"><div class="g-stat-label">Still Needed</div><div class="g-stat-value">${fmtFull(remaining)}</div></div>
+          <div class="g-stat"><div class="g-stat-label">% Complete</div><div class="g-stat-value">${progPct.toFixed(0)}%</div></div>
+          <div class="g-stat"><div class="g-stat-label">Monthly Share</div><div class="g-stat-value">${fmtFull(perGoal)}</div></div>
+        </div>
+        <canvas id="mini-${g.id}" height="80" style="margin-bottom:10px;"></canvas>
+        <div class="goal-actions"><button class="btn-remove" onclick="removeGoal(${g.id})">Remove Goal</button></div>
+      </div>`;
+    list.appendChild(card);
 
-    document.getElementById('ret-years').textContent = years + ' yrs';
-    document.getElementById('ret-nest').textContent = fmt(nestEgg);
-    document.getElementById('ret-monthly').textContent = fmtFull(monthlyInRetirement) + '/mo';
+    setTimeout(() => {
+      const ctx = document.getElementById('mini-' + g.id);
+      if (!ctx) return;
+      if (miniCharts[g.id]) { miniCharts[g.id].destroy(); }
+      miniCharts[g.id] = new Chart(ctx, {
+        type: 'line',
+        data: { labels: miniLabels, datasets: [
+          { data: miniData, borderColor: '#7a9e87', backgroundColor: 'rgba(122,158,135,0.08)', fill: true, tension: 0.4, pointRadius: 2, pointBackgroundColor: '#7a9e87' },
+          { data: miniData.map(() => g.amount), borderColor: '#c9a84c', borderWidth: 1.5, borderDash: [4,3], pointRadius: 0, fill: false }
+        ]},
+        options: {
+          plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => fmtFull(c.raw) } } },
+          scales: {
+            x: { grid: { display: false }, ticks: { font:{family:'DM Sans',size:9}, color:'#7a6e62', maxRotation:0 } },
+            y: { grid: { color:'#f0e8d8' }, ticks: { font:{family:'DM Sans',size:9}, color:'#7a6e62', callback: v => fmt(v) }, min:0, max: g.amount*1.05 }
+          },
+          animation: { duration: 350 }
+        }
+      });
+    }, 10);
+  });
+}
+
+let gBarChart;
+function updateGoalsChart(monthly) {
+  const perGoal = goals.length > 0 && monthly > 0 ? monthly/goals.length : 0;
+  const labels  = goals.map(g => g.name.length>15 ? g.name.slice(0,14)+'…' : g.name);
+  const data    = goals.map(g => perGoal>0 ? parseFloat((Math.max(0,g.amount-g.saved)/perGoal/12).toFixed(1)) : 0);
+  const colors  = goals.map(g => g.priority==='high'?'#7a9e87':g.priority==='medium'?'#c9a84c':'#c0614a');
+
+  if (!gBarChart) {
+    gBarChart = new Chart(document.getElementById('g-bar-chart'), {
+      type: 'bar',
+      data: { labels, datasets: [{ data, backgroundColor: colors, borderRadius: 5, borderSkipped: false }] },
+      options: {
+        indexAxis: 'y',
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => c.raw + ' yrs' } } },
+        scales: {
+          x: { grid: { color:'#f0e8d8' }, ticks: { font:{family:'DM Sans',size:11}, color:'#7a6e62', callback: v => v+'y' } },
+          y: { grid: { display:false }, ticks: { font:{family:'DM Sans',size:11}, color:'#7a6e62' } }
+        },
+        animation: { duration: 500 }
+      }
+    });
+  } else {
+    gBarChart.data.labels = labels;
+    gBarChart.data.datasets[0].data = data;
+    gBarChart.data.datasets[0].backgroundColor = colors;
+    gBarChart.update();
+  }
+}
+
+// ─── RETIREMENT ───
+let rChart;
+function updateRetirement() {
+  const income  = parseFloat(document.getElementById('r-income').value)  || 0;
+  const contrib = parseFloat(document.getElementById('r-contrib').value) || 0;
+  const curAge  = parseInt(document.getElementById('r-cur-age').value)   || 35;
+  const retAge  = parseInt(document.getElementById('r-ret-age').value)   || 65;
+  const curSav  = parseFloat(document.getElementById('r-cur-savings').value) || 0;
+
+  const years  = Math.max(0, retAge - curAge);
+  const months = years * 12;
+  const rate   = 0.06 / 12;
+
+  const fvCur   = curSav  * Math.pow(1+rate, months);
+  const fvContr = rate>0 ? contrib*((Math.pow(1+rate,months)-1)/rate) : contrib*months;
+  const nestEgg = fvCur + fvContr;
+  const monthly = nestEgg * 0.04 / 12;
+  const pct     = income > 0 ? ((contrib/income)*100).toFixed(1) : 0;
+  const onTrack = parseFloat(pct) >= 15;
+
+  document.getElementById('r-years').textContent    = years + ' yrs';
+  document.getElementById('r-nest').textContent     = fmt(nestEgg);
+  document.getElementById('r-monthly').textContent  = fmtFull(monthly) + '/mo';
+  document.getElementById('r-pct').textContent      = pct + '%';
+  document.getElementById('r-annual').textContent   = fmtFull(contrib * 12);
+  document.getElementById('r-track').textContent    = onTrack ? '✅ Yes' : '⚠️ Not yet';
+  document.getElementById('r-track-sub').textContent = onTrack ? 'Saving ' + pct + '% of pay' : 'Aim for 15%+';
+
+  const rLabels=[], rData=[];
+  const step = Math.max(1, Math.floor(years/10));
+  for (let y=0; y<=years; y++) {
+    const m = y*12;
+    const fv = curSav*Math.pow(1+rate,m) + (rate>0 ? contrib*((Math.pow(1+rate,m)-1)/rate) : contrib*m);
+    if (y%step===0 || y===years) { rLabels.push('Age '+(curAge+y)); rData.push(Math.round(fv)); }
   }
 
-  // Init
-  update();
+  if (!rChart) {
+    rChart = new Chart(document.getElementById('r-chart'), {
+      type: 'line',
+      data: { labels: rLabels, datasets: [{ data: rData, borderColor: '#c9a84c', backgroundColor: 'rgba(201,168,76,0.1)', fill: true, tension: 0.4, pointRadius: 3, pointBackgroundColor: '#c9a84c', pointBorderColor: 'white', pointBorderWidth: 2 }] },
+      options: {
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid:{display:false}, ticks:{font:{family:'DM Sans',size:11},color:'#7a6e62',maxTicksLimit:8} },
+          y: { grid:{color:'#f0e8d8'}, ticks:{font:{family:'DM Sans',size:11},color:'#7a6e62',callback:v=>fmt(v)} }
+        },
+        animation: { duration: 500 }
+      }
+    });
+  } else { rChart.data.labels=rLabels; rChart.data.datasets[0].data=rData; rChart.update(); }
+}
+
+// ─── INIT ───
+updateBudget();
+updateGoalsPanel();
+updateRetirement();
 </script>
 </body>
 </html>
