@@ -331,6 +331,7 @@
         <div class="input-label"><span class="dot" style="background:#c0614a"></span>Total Monthly Debt Payment Budget</div>
         <div class="input-row"><span class="currency">$</span><input type="number" id="d-payment" value="600" min="0" oninput="updateDebt(); saveState()"></div>
       </div>
+
     </div>
 
     <!-- Method toggle -->
@@ -614,9 +615,9 @@ function updateGoalsChart(monthly) {
 
 // ─── DEBT ───
 let debts = [
-  {id:1, name:'Credit Card',   type:'credit',  balance:8500,  rate:22.99, minPayment:170},
-  {id:2, name:'Car Loan',      type:'car',     balance:12000, rate:6.9,   minPayment:240},
-  {id:3, name:'Student Loan',  type:'student', balance:18000, rate:4.5,   minPayment:200},
+  {id:1, name:'Credit Card',   type:'credit',  balance:8500,  rate:22.99, minPayment:170, extraPayment:0},
+  {id:2, name:'Car Loan',      type:'car',     balance:12000, rate:6.9,   minPayment:240, extraPayment:0},
+  {id:3, name:'Student Loan',  type:'student', balance:18000, rate:4.5,   minPayment:200, extraPayment:0},
 ];
 let nextDebtId = 4;
 let debtMethod  = 'avalanche';
@@ -634,7 +635,7 @@ function setMethod(m) {
 }
 
 function addDebt() {
-  debts.push({id:nextDebtId++,name:'New Debt',type:'other',balance:5000,rate:15,minPayment:100});
+  debts.push({id:nextDebtId++,name:'New Debt',type:'other',balance:5000,rate:15,minPayment:100,extraPayment:0});
   updateDebt(); saveState();
   setTimeout(()=>{const c=document.querySelectorAll('.debt-card');if(c.length)c[c.length-1].classList.add('open');},30);
 }
@@ -643,26 +644,26 @@ function updateDebtField(id,f,v) { const d=debts.find(d=>d.id===id); if(d)d[f]=(
 function toggleDebt(id) { document.getElementById('debt-card-'+id).classList.toggle('open'); }
 
 function calcPayoffSchedule(debts, totalPayment, method) {
-  // Sort by method
-  let queue = debts.map(d=>({...d, bal: d.balance}));
+  // Each debt can have its own extraPayment on top of minPayment
+  let queue = debts.map(d=>({...d, bal: d.balance, extra: d.extraPayment||0}));
   if (method === 'avalanche') queue.sort((a,b)=>b.rate-a.rate);
   else queue.sort((a,b)=>a.bal-b.bal);
 
-  const minTotal = queue.reduce((s,d)=>s+d.minPayment, 0);
-  const extra    = Math.max(0, totalPayment - minTotal);
-  const schedule = []; // monthly total remaining
+  const minTotal   = queue.reduce((s,d)=>s+d.minPayment, 0);
+  const perDebtExtra = queue.reduce((s,d)=>s+d.extra, 0);
+  const poolExtra  = Math.max(0, totalPayment - minTotal - perDebtExtra);
+  const schedule   = [];
   let totalInterestPaid = 0;
-  const maxMonths = 360;
+  const maxMonths  = 360;
 
   for (let m=0; m<maxMonths; m++) {
     // Apply interest
-    queue.forEach(d=>{ if(d.bal>0) { const int=d.bal*(d.rate/100/12); totalInterestPaid+=int; d.bal+=int; } });
-    // Apply minimums
-    queue.forEach(d=>{ if(d.bal>0) { const pay=Math.min(d.bal,d.minPayment); d.bal-=pay; } });
-    // Apply extra to priority debt
-    let ex = extra;
+    queue.forEach(d=>{ if(d.bal>0){ const int=d.bal*(d.rate/100/12); totalInterestPaid+=int; d.bal+=int; } });
+    // Apply minimums + per-debt extra
+    queue.forEach(d=>{ if(d.bal>0){ const pay=Math.min(d.bal, d.minPayment+(d.extra||0)); d.bal-=pay; } });
+    // Apply pool extra (budget surplus) to priority debt
+    let ex = poolExtra;
     for (const d of queue) { if(d.bal>0&&ex>0){ const pay=Math.min(d.bal,ex); d.bal-=pay; ex-=pay; break; } }
-    // Clean up tiny floats
     queue.forEach(d=>{ if(d.bal<0.01)d.bal=0; });
     const totalRem = queue.reduce((s,d)=>s+d.bal,0);
     schedule.push(Math.round(totalRem));
@@ -686,6 +687,10 @@ function updateDebt() {
   const {schedule, totalInterest, months} = calcPayoffSchedule(debts, totalPayment, debtMethod);
   const totalDebt = debts.reduce((s,d)=>s+d.balance, 0);
 
+  // Build "no extra" baseline for comparison in per-debt impact
+  const debtsNoExtra = debts.map(d=>({...d, extraPayment:0}));
+  const {schedule: schedBase, totalInterest: intBase, months: moBase} = calcPayoffSchedule(debtsNoExtra, totalPayment, debtMethod);
+
   // Sort for order display
   let ordered = [...debts];
   if (debtMethod==='avalanche') ordered.sort((a,b)=>b.rate-a.rate);
@@ -707,6 +712,14 @@ function updateDebt() {
     const monthlyInterest = d.balance * (d.rate/100/12);
     const singleMonths = d.minPayment > monthlyInterest ? Math.ceil(Math.log(d.minPayment/(d.minPayment-monthlyInterest)) / Math.log(1+d.rate/100/12)) : null;
     const etaTxt = singleMonths ? (singleMonths<=12?singleMonths+' mo':(singleMonths/12).toFixed(1)+' yrs') : '∞ (min only)';
+
+    // Per-debt payoff boost estimate
+    const singleDebtExtra = [{...d, extraPayment: d.extraPayment||0}];
+    const singleDebtBase  = [{...d, extraPayment: 0}];
+    const {months: moSingle}    = calcPayoffSchedule(singleDebtBase,  d.minPayment, 'avalanche');
+    const {months: moSingleX}   = calcPayoffSchedule(singleDebtExtra, d.minPayment+(d.extraPayment||0), 'avalanche');
+    const boostMo = moSingle - moSingleX;
+    const extraBoostText = boostMo <= 0 ? '—' : boostMo < 12 ? boostMo+' mo faster' : (boostMo/12).toFixed(1)+' yrs faster';
 
     const card = document.createElement('div');
     card.className='debt-card'+(openIds.has(d.id)?' open':'');
@@ -743,17 +756,58 @@ function updateDebt() {
           <div class="gs"><div class="gs-l">Payoff (min only)</div><div class="gs-v">${etaTxt}</div></div>
           <div class="gs"><div class="gs-l">Payoff Order</div><div class="gs-v">#${orderIdx}</div></div>
         </div>
+        <!-- Per-debt extra payment -->
+        <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--warm);">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+            <div style="font-size:0.72rem;font-weight:500;color:#5b8ab0;text-transform:uppercase;letter-spacing:0.06em;">💙 Extra Monthly Payment</div>
+            <div style="font-family:'Playfair Display',serif;font-size:0.95rem;color:var(--deep);font-weight:700;" id="d-extra-val-${d.id}">${d.extraPayment>0?'+$'+d.extraPayment+'/mo':'none'}</div>
+          </div>
+          <input type="range" id="d-extra-${d.id}" min="0" max="500" step="25" value="${d.extraPayment||0}"
+            oninput="updateDebtField(${d.id},'extraPayment',this.value); document.getElementById('d-extra-val-${d.id}').textContent=this.value>0?'+$'+this.value+'/mo':'none';">
+          <div style="display:flex;justify-content:space-between;font-size:0.68rem;color:var(--light-text);margin-top:3px;"><span>$0</span><span>+$125</span><span>+$250</span><span>+$375</span><span>+$500</span></div>
+          ${d.extraPayment>0 ? `<div id="d-impact-${d.id}" style="display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:10px;text-align:center;">
+            <div style="background:var(--cream);border-radius:8px;padding:8px 6px;"><div style="font-size:0.62rem;color:var(--light-text);text-transform:uppercase;margin-bottom:2px;">Saves per year</div><div style="font-family:'Playfair Display',serif;font-size:0.9rem;color:var(--sage);font-weight:700;">${fmtFull(d.extraPayment*12*(d.rate/100))}</div></div>
+            <div style="background:var(--cream);border-radius:8px;padding:8px 6px;"><div style="font-size:0.62rem;color:var(--light-text);text-transform:uppercase;margin-bottom:2px;">Total extra/yr</div><div style="font-family:'Playfair Display',serif;font-size:0.9rem;color:var(--deep);font-weight:700;">${fmtFull(d.extraPayment*12)}</div></div>
+            <div style="background:var(--cream);border-radius:8px;padding:8px 6px;"><div style="font-size:0.62rem;color:var(--light-text);text-transform:uppercase;margin-bottom:2px;">Est. payoff boost</div><div style="font-family:'Playfair Display',serif;font-size:0.9rem;color:var(--sage);font-weight:700;">${extraBoostText}</div></div>
+          </div>` : ''}
+        </div>
         <div class="row-actions"><button class="btn-rm" onclick="removeDebt(${d.id})">Remove</button></div>
       </div>`;
     list.appendChild(card);
   });
 
-  // Chart
-  const chartLabels=[], chartData=[];
-  schedule.forEach((v,i)=>{ if(i%Math.max(1,Math.floor(months/12))===0||i===months-1){ chartLabels.push('Mo '+(i+1)); chartData.push(v); } });
+  // Chart - no-extra baseline vs current (with extras)
+  const hasExtra = debts.some(d=>(d.extraPayment||0)>0);
+  const allMo = Math.max(months, moBase);
+  const step2 = Math.max(1, Math.floor(allMo/14));
+  const chartLabels=[], chartData=[], chartDataX=[];
+  for (let i=0; i<allMo; i++) {
+    if (i%step2===0 || i===allMo-1) {
+      chartLabels.push('Mo '+(i+1));
+      chartData.push(i < schedBase.length ? schedBase[i] : 0);
+      chartDataX.push(hasExtra ? (i < schedule.length ? schedule[i] : 0) : null);
+    }
+  }
   if(!dChart){
-    dChart=new Chart(document.getElementById('d-chart'),{type:'line',data:{labels:chartLabels,datasets:[{data:chartData,borderColor:'#c0614a',backgroundColor:'rgba(192,97,74,0.08)',fill:true,tension:0.4,pointRadius:3,pointBackgroundColor:'#c0614a',pointBorderColor:'white',pointBorderWidth:2}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{family:'DM Sans',size:11},color:'#7a6e62',maxTicksLimit:10}},y:{grid:{color:'#f0e8d8'},ticks:{font:{family:'DM Sans',size:11},color:'#7a6e62',callback:v=>fmt(v)}}},animation:{duration:500}}});
-  } else { dChart.data.labels=chartLabels; dChart.data.datasets[0].data=chartData; dChart.update(); }
+    dChart=new Chart(document.getElementById('d-chart'),{
+      type:'line',
+      data:{labels:chartLabels,datasets:[
+        {label:'Minimum Payments',data:chartData,borderColor:'#c0614a',backgroundColor:'rgba(192,97,74,0.07)',fill:true,tension:0.4,pointRadius:2,pointBackgroundColor:'#c0614a',pointBorderColor:'white',pointBorderWidth:2},
+        {label:'With Extra Payments',data:chartDataX,borderColor:'#5b8ab0',backgroundColor:'rgba(91,138,176,0.07)',fill:true,tension:0.4,pointRadius:2,pointBackgroundColor:'#5b8ab0',pointBorderColor:'white',pointBorderWidth:2}
+      ]},
+      options:{
+        plugins:{legend:{display:true,labels:{font:{family:'DM Sans',size:11},color:'#7a6e62',boxWidth:10,padding:12,filter:item=>item.datasetIndex===0||hasExtra}}},
+        scales:{x:{grid:{display:false},ticks:{font:{family:'DM Sans',size:11},color:'#7a6e62',maxTicksLimit:10}},y:{grid:{color:'#f0e8d8'},ticks:{font:{family:'DM Sans',size:11},color:'#7a6e62',callback:v=>fmt(v)}}},
+        animation:{duration:400}
+      }
+    });
+  } else {
+    dChart.data.labels=chartLabels;
+    dChart.data.datasets[0].data=chartData;
+    dChart.data.datasets[1].data=chartDataX;
+    dChart.options.plugins.legend.labels.filter = item => item.datasetIndex===0||hasExtra;
+    dChart.update();
+  }
 }
 
 // ─── RETIREMENT ───
